@@ -1,199 +1,128 @@
-{
-  "chantiers": [
-    {
-      "chantier": "Plantation d'une haie",
-      "taches": [
-        {
-          "ordre": 1,
-          "nom": "Repérage et préparation du terrain",
-          "duree": "0,5 j",
-          "effectif": 1,
-          "materiel": ["Mètre", "piquets", "cordeau"]
+          "apres": []
         },
         {
-          "ordre": 2,
-          "nom": "Réception et contrôle des végétaux",
-          "duree": "0,5 j",
-          "effectif": 2,
-          "materiel": ["Véhicule", "bâche", "brouette"]
-        },
-        {
-          "ordre": 3,
-          "nom": "Préparation du sol et amendement",
-          "duree": "1 j",
-          "effectif": 2,
-          "materiel": ["Bêche", "motoculteur", "amendement"]
-        },
-        {
-          "ordre": 4,
-          "nom": "Mise en place et plantation des arbustes",
-          "duree": "1,5 j",
-          "effectif": 2,
-          "materiel": ["Pelle", "transplantoir", "sécateur"]
-        },
-        {
-          "ordre": 5,
-          "nom": "Arrosage et réalisation des cuvettes",
-          "duree": "0,5 j",
-          "effectif": 2,
-          "materiel": ["Tuyau", "arrosoir"]
-        },
-        {
-          "ordre": 6,
-          "nom": "Paillage, nettoyage et contrôle final",
-          "duree": "0,5 j",
-          "effectif": 2,
-          "materiel": ["Paillage", "râteau", "balai"]
-        }
-      ]
-    },
-    {
-      "chantier": "Création d'une pelouse par semis",
-      "taches": [
-        {
-          "ordre": 1,
-          "nom": "Diagnostic du terrain et implantation",
-          "duree": "0,5 j",
-          "effectif": 1,
-          "materiel": ["Mètre", "piquets", "cordeau"]
-        },
-        {
-          "ordre": 2,
-          "nom": "Décompactage et préparation du sol",
-          "duree": "1 j",
-          "effectif": 2,
-          "materiel": ["Motobineuse", "motoculteur", "EPI"]
-        },
-        {
-          "ordre": 3,
-          "nom": "Apport de terre végétale et nivellement",
-          "duree": "1 j",
-          "effectif": 2,
-          "materiel": ["Terre végétale", "brouette", "râteau"]
-        },
-        {
-          "ordre": 4,
-          "nom": "Semis et enfouissement léger des graines",
-          "duree": "0,5 j",
-          "effectif": 2,
-          "materiel": ["Semences", "semoir", "râteau"]
-        },
-        {
-          "ordre": 5,
-          "nom": "Roulage et premier arrosage",
-          "duree": "0,5 j",
-          "effectif": 1,
-          "materiel": ["Rouleau", "tuyau d'arrosage"]
-        },
-        {
-          "ordre": 6,
-          "nom": "Nettoyage et réception du chantier",
-          "duree": "0,5 j",
-          "effectif": 1,
-          "materiel": ["Balai", "outils de nettoyage"]
-        }
-      ]
-    },
-    {
-      "chantier": "Création d'un massif paysager",
-      "taches": [
-        {
-          "ordre": 1,
-          "nom": "Repérage, traçage et implantation du massif",
-          "duree": "0,5 j",
-          "effectif": 1,
-          "materiel": ["Plan", "cordeau", "piquets"]
-        },
-        {
-          "ordre": 2,
-          "nom": "Désherbage et nettoyage de la zone",
-          "duree": "0,5 j",
-          "effectif": 2,
-          "materiel": ["Binette", "outils manuels"]
-        },
-        {
-          "ordre": 3,
-          "nom": "Préparation et amendement du sol",
-          "duree": "0,5 j",
-          "effectif": 2,
-          "materiel": ["Bêche", "fourche", "compost"]
-        },
-        {
-          "ordre": 4,
+          "id": "massif-paysager-4",
           "nom": "Répartition et plantation des végétaux",
-          "duree": "1 j",
+          "duree_jours": 1,
           "effectif": 2,
-          "materiel": ["Végétaux", "transplantoir", "pelle"]
+          "materiel": [
+            "Végétaux",
+            "transplantoir",
+            "pelle"
+          ],
+          "apres": []
         },
         {
-          "ordre": 5,
+          "id": "massif-paysager-5",
           "nom": "Mise en place du paillage et arrosage",
-          "duree": "0,5 j",
+          "duree_jours": 0.5,
           "effectif": 2,
-          "materiel": ["Paillage", "tuyau", "arrosoir"]
+          "materiel": [
+            "Paillage",
+            "tuyau",
+            "arrosoir"
+          ],
+          "apres": []
         },
         {
-          "ordre": 6,
+          "id": "massif-paysager-6",
           "nom": "Nettoyage et contrôle des finitions",
-          "duree": "0,5 j",
+          "duree_jours": 0.5,
           "effectif": 1,
-          "materiel": ["Balai", "râteau"]
+          "materiel": [
+            "Balai",
+            "râteau"
+          ],
+          "apres": []
         }
       ]
     },
     {
+      "id": "arrosage-auto",
       "chantier": "Pose d'un système d'arrosage automatique",
       "taches": [
         {
-          "ordre": 1,
+          "id": "arrosage-auto-1",
           "nom": "Repérage du terrain et étude des besoins en eau",
-          "duree": "0,5 j",
+          "duree_jours": 0.5,
           "effectif": 1,
-          "materiel": ["Plan", "mètre", "matériel de mesure"]
+          "materiel": [
+            "Plan",
+            "mètre",
+            "matériel de mesure"
+          ],
+          "apres": []
         },
         {
-          "ordre": 2,
+          "id": "arrosage-auto-2",
           "nom": "Implantation du réseau et traçage",
-          "duree": "0,5 j",
+          "duree_jours": 0.5,
           "effectif": 1,
-          "materiel": ["Cordeau", "piquets", "bombe de traçage"]
+          "materiel": [
+            "Cordeau",
+            "piquets",
+            "bombe de traçage"
+          ],
+          "apres": []
         },
         {
-          "ordre": 3,
+          "id": "arrosage-auto-3",
           "nom": "Ouverture des tranchées",
-          "duree": "1 j",
+          "duree_jours": 1,
           "effectif": 2,
-          "materiel": ["Pelle", "pioche", "trancheuse si adaptée"]
+          "materiel": [
+            "Pelle",
+            "pioche",
+            "trancheuse si adaptée"
+          ],
+          "apres": []
         },
         {
-          "ordre": 4,
+          "id": "arrosage-auto-4",
           "nom": "Pose des tuyaux et raccordements",
-          "duree": "1 j",
+          "duree_jours": 1,
           "effectif": 2,
-          "materiel": ["Tuyaux", "raccords", "clés", "colle adaptée"]
+          "materiel": [
+            "Tuyaux",
+            "raccords",
+            "clés",
+            "colle adaptée"
+          ],
+          "apres": []
         },
         {
-          "ordre": 5,
+          "id": "arrosage-auto-5",
           "nom": "Installation des arroseurs et électrovannes",
-          "duree": "0,5 j",
+          "duree_jours": 0.5,
           "effectif": 2,
-          "materiel": ["Arroseurs", "électrovannes", "regard"]
+          "materiel": [
+            "Arroseurs",
+            "électrovannes",
+            "regard"
+          ],
+          "apres": []
         },
         {
-          "ordre": 6,
+          "id": "arrosage-auto-6",
           "nom": "Essais, réglages et contrôle d'étanchéité",
-          "duree": "0,5 j",
+          "duree_jours": 0.5,
           "effectif": 2,
-          "materiel": ["Programmateur", "outils de réglage"]
+          "materiel": [
+            "Programmateur",
+            "outils de réglage"
+          ],
+          "apres": []
         },
         {
-          "ordre": 7,
+          "id": "arrosage-auto-7",
           "nom": "Remblaiement et remise en état du terrain",
-          "duree": "0,5 j",
+          "duree_jours": 0.5,
           "effectif": 2,
-          "materiel": ["Pelle", "râteau", "terre"]
+          "materiel": [
+            "Pelle",
+            "râteau",
+            "terre"
+          ],
+          "apres": []
         }
       ]
-    }
-  ]
-}
