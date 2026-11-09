@@ -9,6 +9,7 @@
           "nom": "Repérage et préparation du terrain",
           "duree_jours": 0.5,
           "effectif": 1,
+          "prix_moyen_ttc": 150.00,
           "materiel": "Mètre, piquets, cordeau",
           "apres": []
         },
@@ -17,6 +18,7 @@
           "nom": "Réception et contrôle des végétaux",
           "duree_jours": 0.5,
           "effectif": 2,
+          "prix_moyen_ttc": 200.00,
           "materiel": "Véhicule, bâche, outils de manutention",
           "apres": [
             "reperage"
@@ -27,6 +29,7 @@
           "nom": "Préparation du sol et amendement",
           "duree_jours": 1,
           "effectif": 2,
+          "prix_moyen_ttc": 350.00,
           "materiel": "Bêche, motoculteur si adapté, amendement",
           "apres": [
             "reperage"
@@ -37,6 +40,7 @@
           "nom": "Mise en place et plantation des arbustes",
           "duree_jours": 1.5,
           "effectif": 2,
+          "prix_moyen_ttc": 550.00,
           "materiel": "Pelle, transplantoir, sécateur, arrosoir",
           "apres": [
             "approvisionnement",
@@ -48,6 +52,7 @@
           "nom": "Arrosage copieux et cuvettes",
           "duree_jours": 0.5,
           "effectif": 2,
+          "prix_moyen_ttc": 120.00,
           "materiel": "Tuyau, arrosoir",
           "apres": [
             "plantation"
@@ -58,6 +63,7 @@
           "nom": "Paillage, nettoyage et contrôle final",
           "duree_jours": 0.5,
           "effectif": 2,
+          "prix_moyen_ttc": 180.00,
           "materiel": "Paillage, râteau, balai",
           "apres": [
             "arrosage"
@@ -74,6 +80,7 @@
           "nom": "Diagnostic du terrain et implantation",
           "duree_jours": 0.5,
           "effectif": 1,
+          "prix_moyen_ttc": 120.00,
           "materiel": "Mètre, piquets, cordeau",
           "apres": []
         },
@@ -82,6 +89,7 @@
           "nom": "Décompactage et préparation du sol",
           "duree_jours": 1,
           "effectif": 2,
+          "prix_moyen_ttc": 400.00,
           "materiel": "Motobineuse ou motoculteur, EPI",
           "apres": [
             "diagnostic"
@@ -92,6 +100,7 @@
           "nom": "Apport de terre végétale et nivellement",
           "duree_jours": 1,
           "effectif": 2,
+          "prix_moyen_ttc": 450.00,
           "materiel": "Terre végétale, brouette, râteau, règle",
           "apres": [
             "decompactage"
@@ -102,6 +111,7 @@
           "nom": "Semis et enfouissement léger des graines",
           "duree_jours": 0.5,
           "effectif": 2,
+          "prix_moyen_ttc": 250.00,
           "materiel": "Semences, semoir, râteau",
           "apres": [
             "nivellement"
@@ -112,6 +122,7 @@
           "nom": "Roulage et premier arrosage",
           "duree_jours": 0.5,
           "effectif": 1,
+          "prix_moyen_ttc": 130.00,
           "materiel": "Rouleau, tuyau d’arrosage",
           "apres": [
             "semis"
@@ -122,6 +133,7 @@
           "nom": "Nettoyage et réception du chantier",
           "duree_jours": 0.5,
           "effectif": 1,
+          "prix_moyen_ttc": 100.00,
           "materiel": "Balai, outils de nettoyage",
           "apres": [
             "roulage"
@@ -138,6 +150,7 @@
           "nom": "Repérage, traçage et implantation du massif",
           "duree_jours": 0.5,
           "effectif": 1,
+          "prix_moyen_ttc": 140.00,
           "materiel": "Plan, cordeau, piquets, bombe de traçage",
           "apres": []
         },
@@ -146,6 +159,7 @@
           "nom": "Désherbage et nettoyage de la zone",
           "duree_jours": 0.5,
           "effectif": 2,
+          "prix_moyen_ttc": 160.00,
           "materiel": "Binette, outils manuels, sacs",
           "apres": [
             "conception"
@@ -156,6 +170,7 @@
           "nom": "Préparation et amendement du sol",
           "duree_jours": 0.5,
           "effectif": 2,
+          "prix_moyen_ttc": 220.00,
           "materiel": "Bêche, fourche, compost ou amendement",
           "apres": [
             "desherbage"
@@ -166,6 +181,7 @@
           "nom": "Répartition et plantation des végétaux",
           "duree_jours": 1,
           "effectif": 2,
+          "prix_moyen_ttc": 480.00,
           "materiel": "Végétaux, transplantoir, pelle, sécateur",
           "apres": [
             "sol"
@@ -176,6 +192,7 @@
           "nom": "Mise en place du paillage et arrosage",
           "duree_jours": 0.5,
           "effectif": 2,
+          "prix_moyen_ttc": 210.00,
           "materiel": "Paillage, tuyau, arrosoir",
           "apres": [
             "vegetaux"
@@ -186,6 +203,7 @@
           "nom": "Nettoyage et contrôle des finitions",
           "duree_jours": 0.5,
           "effectif": 1,
+          "prix_moyen_ttc": 110.00,
           "materiel": "Balai, râteau",
           "apres": [
             "paillage"
