@@ -1,3 +1,195 @@
+{
+  "chantiers": [
+    {
+      "id": "plantation-haie",
+      "chantier": "Plantation d'une haie",
+      "taches": [
+        {
+          "id": "plantation-haie-1",
+          "nom": "Repérage et préparation du terrain",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "materiel": [
+            "Mètre",
+            "piquets",
+            "cordeau"
+          ],
+          "apres": []
+        },
+        {
+          "id": "plantation-haie-2",
+          "nom": "Réception et contrôle des végétaux",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "materiel": [
+            "Véhicule",
+            "bâche",
+            "brouette"
+          ],
+          "apres": []
+        },
+        {
+          "id": "plantation-haie-3",
+          "nom": "Préparation du sol et amendement",
+          "duree_jours": 1,
+          "effectif": 2,
+          "materiel": [
+            "Bêche",
+            "motoculteur",
+            "amendement"
+          ],
+          "apres": []
+        },
+        {
+          "id": "plantation-haie-4",
+          "nom": "Mise en place et plantation des arbustes",
+          "duree_jours": 1.5,
+          "effectif": 2,
+          "materiel": [
+            "Pelle",
+            "transplantoir",
+            "sécateur"
+          ],
+          "apres": []
+        },
+        {
+          "id": "plantation-haie-5",
+          "nom": "Arrosage et réalisation des cuvettes",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "materiel": [
+            "Tuyau",
+            "arrosoir"
+          ],
+          "apres": []
+        },
+        {
+          "id": "plantation-haie-6",
+          "nom": "Paillage, nettoyage et contrôle final",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "materiel": [
+            "Paillage",
+            "râteau",
+            "balai"
+          ],
+          "apres": []
+        }
+      ]
+    },
+    {
+      "id": "pelouse-semis",
+      "chantier": "Création d'une pelouse par semis",
+      "taches": [
+        {
+          "id": "pelouse-semis-1",
+          "nom": "Diagnostic du terrain et implantation",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "materiel": [
+            "Mètre",
+            "piquets",
+            "cordeau"
+          ],
+          "apres": []
+        },
+        {
+          "id": "pelouse-semis-2",
+          "nom": "Décompactage et préparation du sol",
+          "duree_jours": 1,
+          "effectif": 2,
+          "materiel": [
+            "Motobineuse",
+            "motoculteur",
+            "EPI"
+          ],
+          "apres": []
+        },
+        {
+          "id": "pelouse-semis-3",
+          "nom": "Apport de terre végétale et nivellement",
+          "duree_jours": 1,
+          "effectif": 2,
+          "materiel": [
+            "Terre végétale",
+            "brouette",
+            "râteau"
+          ],
+          "apres": []
+        },
+        {
+          "id": "pelouse-semis-4",
+          "nom": "Semis et enfouissement léger des graines",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "materiel": [
+            "Semences",
+            "semoir",
+            "râteau"
+          ],
+          "apres": []
+        },
+        {
+          "id": "pelouse-semis-5",
+          "nom": "Roulage et premier arrosage",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "materiel": [
+            "Rouleau",
+            "tuyau d'arrosage"
+          ],
+          "apres": []
+        },
+        {
+          "id": "pelouse-semis-6",
+          "nom": "Nettoyage et réception du chantier",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "materiel": [
+            "Balai",
+            "outils de nettoyage"
+          ],
+          "apres": []
+        }
+      ]
+    },
+    {
+      "id": "massif-paysager",
+      "chantier": "Création d'un massif paysager",
+      "taches": [
+        {
+          "id": "massif-paysager-1",
+          "nom": "Repérage, traçage et implantation du massif",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "materiel": [
+            "Plan",
+            "cordeau",
+            "piquets"
+          ],
+          "apres": []
+        },
+        {
+          "id": "massif-paysager-2",
+          "nom": "Désherbage et nettoyage de la zone",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "materiel": [
+            "Binette",
+            "outils manuels"
+          ],
+          "apres": []
+        },
+        {
+          "id": "massif-paysager-3",
+          "nom": "Préparation et amendement du sol",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "materiel": [
+            "Bêche",
+            "fourche",
+            "compost"
+          ],
           "apres": []
         },
         {
@@ -126,3 +318,6 @@
           "apres": []
         }
       ]
+    }
+  ]
+}
