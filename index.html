@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#245b43">
-<meta name="description" content="Planificateur de chantiers paysagers">
+<meta name="description" content="Planificateur de chantiers paysagers et générateur de devis">
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Chantier Planner Paysager</title>
+<title>Chantier Planner Paysager - Planning & Devis</title>
 <style>
 :root{--green:#245b43;--green2:#367653;--cream:#f5f7f1;--ink:#203027;--muted:#65736a;--line:#dce5dc;--red:#a83232}
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
@@ -18,65 +18,274 @@ h2{font-size:1.15rem;margin:0 0 14px;color:var(--green)}h3{font-size:1rem;margin
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
 label{display:block;font-weight:600;font-size:.9rem;color:#35483b}input,select,button{font:inherit}input,select{width:100%;padding:10px;border:1px solid #cbd8cd;border-radius:8px;background:white;color:var(--ink);margin-top:4px}
 button{border:0;border-radius:9px;padding:10px 15px;background:var(--green);color:white;font-weight:650;cursor:pointer}button.secondary{background:#e8f0e9;color:var(--green)}button:disabled{opacity:.5;cursor:not-allowed}
-.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.task{border:1px solid var(--line);border-radius:10px;padding:12px;margin:9px 0;display:grid;grid-template-columns:auto minmax(150px,1fr) repeat(3,minmax(105px,135px));gap:10px;align-items:center}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.task{border:1px solid var(--line);border-radius:10px;padding:12px;margin:9px 0;display:grid;grid-template-columns:auto minmax(140px,1fr) repeat(4,minmax(95px,125px));gap:10px;align-items:center}
 .task small{display:block;color:var(--muted)}.task input[type=checkbox]{width:18px;height:18px;margin:0}.task input[type=number]{margin:0}.task-name{font-weight:650}
-.statrow{display:flex;gap:12px;flex-wrap:wrap}.stat{background:#edf4ed;padding:12px 15px;border-radius:10px;min-width:140px}.stat b{display:block;font-size:1.35rem;color:var(--green)}
+.statrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}.stat{background:#edf4ed;padding:12px 15px;border-radius:10px;min-width:140px}.stat b{display:block;font-size:1.35rem;color:var(--green)}
 table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f1f5f0;color:var(--green)}.tablewrap{overflow-x:auto}
 .alert{padding:11px 13px;border-radius:9px;background:#fff0ed;color:#8d2929;margin:10px 0}.notice{padding:11px 13px;background:#edf4ed;border-radius:9px;color:#365a41;margin:10px 0}.muted{color:var(--muted);font-size:.9rem}.offline{display:none;background:#fff1d6;color:#76500a;text-align:center;padding:7px}.offline.show{display:block}
-@media(max-width:760px){.task{grid-template-columns:auto 1fr 1fr}.task-name{grid-column:2/4}.task small{grid-column:2/4}.task label{font-size:.8rem}}
+
+/* Style Devis PDF pour impression */
+#devis-print{display:none}
+@media print{
+  body *{visibility:hidden}
+  #devis-print, #devis-print *{visibility:visible}
+  #devis-print{display:block;position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff}
+  #devis-print h1{color:var(--green);margin-bottom:5px}
+  #devis-print table{width:100%;border-collapse:collapse;margin-top:15px}
+  #devis-print th, #devis-print td{border:1px solid #ccc;padding:8px;text-align:left}
+  #devis-print th{background-color:#f0f0f0}
+  .devis-header{display:flex;justify-content:space-between;margin-bottom:20px;border-bottom:2px solid var(--green);padding-bottom:10px}
+  .devis-totals{margin-top:20px;text-align:right;font-size:1.1rem}
+}
+
+@media(max-width:900px){.task{grid-template-columns:auto 1fr 1fr}.task-name{grid-column:2/4}.task small{grid-column:2/4}.task label{font-size:.8rem}}
 </style>
 </head>
 <body>
 <div id="offline" class="offline">Vous êtes hors ligne — les données enregistrées restent consultables.</div>
-<header><h1>🌿 Chantier Planner Paysager</h1><p>Préparer, organiser et exporter vos chantiers d’aménagement paysager</p></header>
+<header><h1>🌿 Chantier Planner Paysager</h1><p>Préparer, organiser, chiffrer et exporter vos devis et plannings paysagers</p></header>
 <main>
 <section class="panel">
 <h2>1. Informations du chantier</h2>
 <div class="grid">
 <label>Type de chantier<select id="chantier"></select></label>
-<label>Entreprise<input id="entreprise" placeholder="Ex. Jardins du Sud"></label>
-<label>Client (nom fictif)<input id="client" placeholder="Ex. Client Démo"></label>
+<label>Entreprise<input id="entreprise" value="Jardins & Paysages SARL" placeholder="Ex. Jardins du Sud"></label>
+<label>Client (nom / référence)<input id="client" value="M. et Mme Dupont" placeholder="Ex. Client Démo"></label>
 <label>Date de début<input id="debut" type="date"></label>
 <label>Date limite (facultative)<input id="limite" type="date"></label>
 <label>Effectif disponible<input id="equipe" type="number" min="1" step="1" value="3"></label>
 </div>
-<p class="muted">Les données d’exemple sont des estimations pédagogiques : vérifiez les durées, les effectifs, la sécurité et les contraintes du terrain avant utilisation professionnelle.</p>
+<p class="muted">Les données d’exemple sont des estimations pédagogiques : vérifiez les durées, les effectifs et les prix avant validation professionnelle.</p>
 </section>
+
 <section class="panel">
-<h2>2. Tâches du chantier</h2>
+<h2>2. Tâches et Chiffrage du devis</h2>
 <div id="tasks"></div>
-<div class="statrow"><div class="stat"><span>Durée totale des tâches sélectionnées</span><b id="total">0 j</b></div><div class="stat"><span>Effectif disponible</span><b id="crewstat">3 pers.</b></div></div>
-<div class="actions"><button id="recalc">Calculer le planning</button><button class="secondary" id="reset">Réinitialiser les tâches</button></div>
+<div class="statrow">
+  <div class="stat"><span>Durée totale</span><b id="total">0 j</b></div>
+  <div class="stat"><span>Effectif disponible</span><b id="crewstat">3 pers.</b></div>
+  <div class="stat"><span>Total Estimé TTC</span><b id="pricestat">0,00 €</b></div>
+</div>
+<div class="actions">
+  <button id="recalc">Calculer le planning</button>
+  <button class="secondary" id="reset">Réinitialiser les tâches</button>
+</div>
 </section>
+
 <section class="panel">
-<h2>3. Planning prévisionnel</h2><div id="alerts"></div><div id="enddate" class="notice">Choisissez une date de début puis cliquez sur « Calculer le planning ».</div>
-<div class="tablewrap"><table><thead><tr><th>Date</th><th>Demi-journée</th><th>Tâche</th><th>Durée planifiée</th><th>Équipe</th></tr></thead><tbody id="schedule"><tr><td colspan="5" class="muted">Aucun planning calculé.</td></tr></tbody></table></div>
-<div class="actions"><button id="export">Exporter le planning (.ics)</button></div>
+<h2>3. Planning prévisionnel</h2>
+<div id="alerts"></div>
+<div id="enddate" class="notice">Choisissez une date de début puis cliquez sur « Calculer le planning ».</div>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Date</th><th>Demi-journée</th><th>Tâche</th><th>Durée planifiée</th><th>Équipe</th></tr></thead>
+  <tbody id="schedule"><tr><td colspan="5" class="muted">Aucun planning calculé.</td></tr></tbody>
+</table>
+</div>
+<div class="actions">
+  <button id="export">Exporter le planning (.ics)</button>
+</div>
 </section>
+
 <section class="panel">
-<h2>4. À propos</h2><p class="muted">Application pédagogique réalisée pour un TP de BTS Aménagements paysagers. Elle fonctionne avec un fichier de données séparé (<code>chantiers.json</code>) et peut être installée comme PWA après publication en HTTPS.</p>
+<h2>4. Devis & Facturation</h2>
+<p>Générez un devis imprimable au format PDF à transmettre à votre client.</p>
+<div class="actions">
+  <button id="generate-pdf">Générer / Télécharger le Devis (PDF)</button>
+</div>
+</section>
+
+<section class="panel">
+<h2>5. À propos</h2>
+<p class="muted">Application pédagogique réalisée pour un TP de BTS Aménagements paysagers. Elle fonctionne avec un fichier de données séparé (<code>chantiers.json</code>) et permet la gestion de plannings et de devis.</p>
 </section>
 </main>
+
+<!-- Zone cachée dédiée à l'impression / export PDF du devis -->
+<div id="devis-print">
+  <div class="devis-header">
+    <div>
+      <h1 id="pdf-entreprise-name">Entreprise</h1>
+      <p>Aménagement & Entretien Paysager</p>
+    </div>
+    <div style="text-align:right;">
+      <h2>DEVIS ESTIMATIF</h2>
+      <p>Date : <span id="pdf-date"></span></p>
+      <p>Client : <strong id="pdf-client-name"></strong></p>
+    </div>
+  </div>
+  <h3>Projet : <span id="pdf-project-name"></span></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Désignation de la prestation / tâche</th>
+        <th>Effectif</th>
+        <th>Durée (j)</th>
+        <th>Prix TTC</th>
+      </tr>
+    </thead>
+    <tbody id="pdf-items"></tbody>
+  </table>
+  <div class="devis-totals">
+    <p><strong>Total HT (TVA 10%) : <span id="pdf-total-ht"></span> €</strong></p>
+    <p><strong>Total TVA (10%) : <span id="pdf-tva"></span> €</strong></p>
+    <p style="font-size:1.3rem; color:var(--green);"><strong>TOTAL TTC : <span id="pdf-total-ttc"></span> €</strong></p>
+  </div>
+  <div style="margin-top:40px; font-size:0.85rem; color:#555;">
+    <p>Bon pour accord et signature du client :</p>
+    <br><br>
+    <p><em>Devis valable 30 jours à compter de sa date d'émission.</em></p>
+  </div>
+</div>
+
 <script>
-let library=[],selected=new Set(),plan=[],taskDates={};
-const $=id=>document.getElementById(id),fmt=n=>String(n).replace('.',',');
+let library=[],selected=new Set(),plan=[],taskDates={},taskPrices={};
+const $=id=>document.getElementById(id),fmt=n=>Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
 function duration(t){return t.sous_taches?t.sous_taches.reduce((s,x)=>s+Number(x.duree_jours||0),0):Number(t.duree_jours||0)}
 function iso(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-async function load(){try{const r=await fetch('./chantiers.json');if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();if(!Array.isArray(d.chantiers))throw Error('Structure JSON invalide');library=d.chantiers;$('chantier').innerHTML=library.map(c=>`<option value="${c.id}">${c.nom||c.chantier}</option>`).join('');$('debut').value=iso();renderTasks()}catch(e){$('tasks').innerHTML='<div class="alert">Impossible de charger chantiers.json : '+e.message+'</div>'}}
+
+async function load(){
+  try{
+    const r=await fetch('./chantiers.json');
+    if(!r.ok)throw Error('HTTP '+r.status);
+    const d=await r.json();
+    if(!Array.isArray(d.chantiers))throw Error('Structure JSON invalide');
+    library=d.chantiers;
+    $('chantier').innerHTML=library.map(c=>`<option value="${c.id}">${c.nom||c.chantier}</option>`).join('');
+    $('debut').value=iso();
+    renderTasks();
+  }catch(e){
+    $('tasks').innerHTML='<div class="alert">Impossible de charger chantiers.json : '+e.message+'</div>';
+  }
+}
+
 function current(){return library.find(c=>c.id===$('chantier').value)}
-function renderTasks(){const c=current();if(!c)return;selected=new Set(c.taches.map(t=>t.id));$('tasks').innerHTML=c.taches.map(t=>`<div class="task"><input type="checkbox" data-check="${t.id}" checked><div class="task-name">${t.nom}<small>Après : ${t.apres?.length?t.apres.map(id=>c.taches.find(x=>x.id===id)?.nom||id).join(', '):'Aucune dépendance'}<br>Matériel : ${Array.isArray(t.materiel)?t.materiel.join(', '):t.materiel||'Non précisé'}</small></div><label>Durée (jours)<input type="number" min=".5" step=".5" value="${duration(t)}" data-duration="${t.id}"></label><label>Effectif<input type="number" min="1" step="1" value="${t.effectif||1}" data-crew="${t.id}"></label><label>Date de début<input type="date" value="${taskDates[t.id]||$('debut').value||iso()}" data-date="${t.id}"></label></div>`).join('');$('tasks').querySelectorAll('[data-check]').forEach(x=>x.onchange=()=>{x.checked?selected.add(x.dataset.check):selected.delete(x.dataset.check);updateTotal()});$('tasks').querySelectorAll('[data-duration],[data-crew]').forEach(x=>x.oninput=updateTotal);$('tasks').querySelectorAll('[data-date]').forEach(x=>x.onchange=()=>taskDates[x.dataset.date]=x.value);updateTotal()}
-function values(){return current().taches.filter(t=>selected.has(t.id)).map(t=>({id:t.id,nom:t.nom,apres:t.apres||[],duree:Math.max(.5,Number($(`[data-duration="${t.id}"]`)?.value||duration(t))),effectif:Math.max(1,Math.floor(Number($(`[data-crew="${t.id}"]`)?.value||t.effectif||1))),date:$(`[data-date="${t.id}"]`)?.value||$('debut').value,materiel:Array.isArray(t.materiel)?t.materiel.join(', '):(t.materiel||'')}))}
-function updateTotal(){$('total').textContent=fmt(values().reduce((s,t)=>s+t.duree,0))+' j';$('crewstat').textContent=$('equipe').value+' pers.'}
-$('chantier').onchange=()=>{plan=[];taskDates={};renderTasks();$('schedule').innerHTML='<tr><td colspan="5">Recalculez le planning.</td></tr>'};$('equipe').oninput=updateTotal;$('debut').onchange=()=>document.querySelectorAll('[data-date]').forEach(x=>{if(!taskDates[x.dataset.date])x.value=$('debut').value});
-$('reset').onclick=()=>{taskDates={};renderTasks();plan=[];$('schedule').innerHTML='<tr><td colspan="5">Planning réinitialisé.</td></tr>'};
+
+function renderTasks(){
+  const c=current();
+  if(!c)return;
+  selected=new Set(c.taches.map(t=>t.id));
+  c.taches.forEach(t=>{ if(taskPrices[t.id]===undefined) taskPrices[t.id]=t.prix_moyen_ttc||0; });
+  
+  $('tasks').innerHTML=c.taches.map(t=>`
+    <div class="task">
+      <input type="checkbox" data-check="${t.id}" checked>
+      <div class="task-name">${t.nom}<small>Après : ${t.apres?.length?t.apres.map(id=>c.taches.find(x=>x.id===id)?.nom||id).join(', '):'Aucune dépendance'}<br>Matériel : ${Array.isArray(t.materiel)?t.materiel.join(', '):t.materiel||'Non précisé'}</small></div>
+      <label>Durée (j)<input type="number" min=".5" step=".5" value="${duration(t)}" data-duration="${t.id}"></label>
+      <label>Effectif<input type="number" min="1" step="1" value="${t.effectif||1}" data-crew="${t.id}"></label>
+      <label>Prix TTC (€)<input type="number" min="0" step="10" value="${taskPrices[t.id]}" data-price="${t.id}"></label>
+      <label>Date début<input type="date" value="${taskDates[t.id]||$('debut').value||iso()}" data-date="${t.id}"></label>
+    </div>
+  `).join('');
+  
+  $('tasks').querySelectorAll('[data-check]').forEach(x=>x.onchange=()=>{x.checked?selected.add(x.dataset.check):selected.delete(x.dataset.check);updateTotal()});
+  $('tasks').querySelectorAll('[data-duration],[data-crew]').forEach(x=>x.oninput=updateTotal);
+  $('tasks').querySelectorAll('[data-price]').forEach(x=>x.oninput=e=>{taskPrices[e.target.dataset.price]=Number(e.target.value);updateTotal()});
+  $('tasks').querySelectorAll('[data-date]').forEach(x=>x.onchange=()=>taskDates[x.dataset.date]=x.value);
+  updateTotal();
+}
+
+function values(){
+  return current().taches.filter(t=>selected.has(t.id)).map(t=>({
+    id:t.id,
+    nom:t.nom,
+    apres:t.apres||[],
+    duree:Math.max(.5,Number($(`[data-duration="${t.id}"]`)?.value||duration(t))),
+    effectif:Math.max(1,Math.floor(Number($(`[data-crew="${t.id}"]`)?.value||t.effectif||1))),
+    prix:Number($(`[data-price="${t.id}"]`)?.value||taskPrices[t.id]||0),
+    date:$(`[data-date="${t.id}"]`)?.value||$('debut').value,
+    materiel:Array.isArray(t.materiel)?t.materiel.join(', '):(t.materiel||'')
+  }));
+}
+
+function updateTotal(){
+  const ts=values();
+  const totalDays=ts.reduce((s,t)=>s+t.duree,0);
+  const totalPrice=ts.reduce((s,t)=>s+t.prix,0);
+  $('total').textContent=fmt(totalDays)+' j';
+  $('crewstat').textContent=$('equipe').value+' pers.';
+  $('pricestat').textContent=fmt(totalPrice)+' €';
+}
+
+$('chantier').onchange=()=>{plan=[];taskDates={};taskPrices={};renderTasks();$('schedule').innerHTML='<tr><td colspan="5">Recalculez le planning.</td></tr>'};
+$('equipe').oninput=updateTotal;
+$('debut').onchange=()=>document.querySelectorAll('[data-date]').forEach(x=>{if(!taskDates[x.dataset.date])x.value=$('debut').value});
+$('reset').onclick=()=>{taskDates={};taskPrices={};renderTasks();plan=[];$('schedule').innerHTML='<tr><td colspan="5">Planning réinitialisé.</td></tr>'};
+
 function addDays(d,n){let x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)}
 function workday(d){let x=d;while([0,6].includes(new Date(x+'T12:00:00').getDay()))x=addDays(x,1);return x}
-function schedule(){let ts=values(),pending=new Map(ts.map(t=>[t.id,t])),done=new Set(),slots=[],cursor=$('debut').value||iso(),alerts=[];if(!ts.length)return;ts.filter(t=>t.effectif>Number($('equipe').value||1)).forEach(t=>alerts.push(`${t.nom} nécessite ${t.effectif} personnes, au-delà de l’effectif disponible.`));let guard=0;while(pending.size&&guard++<500){let ready=[...pending.values()].filter(t=>t.apres.every(id=>done.has(id)||!ts.some(x=>x.id===id)));if(!ready.length){alerts.push('Dépendances impossibles ou circulaires.');break}let t=ready[0],day=workday([t.date,cursor].filter(Boolean).sort().slice(-1)[0]),n=Math.round(t.duree*2);for(let h=0;h<n;h++){day=workday(day);slots.push({date:day,period:h%2?'Après-midi':'Matin',task:t.nom,id:t.id,effectif:t.effectif,materiel:t.materiel,client:$('client').value,chantier:current().nom||current().chantier});if(h%2===1||h===n-1)day=addDays(day,1)}cursor=day;done.add(t.id);pending.delete(t.id)}plan=slots;let dates=[...new Set(slots.map(x=>x.date))],end=dates.at(-1);if(end&&$('limite').value&&end>$('limite').value)alerts.push('La date limite est dépassée.');$('alerts').innerHTML=alerts.map(x=>'<div class="alert">'+x+'</div>').join('');$('enddate').textContent=end?'Fin prévisionnelle : '+end.split('-').reverse().join('/')+' ('+dates.length+' jour(s) ouvré(s)).':'Aucun planning calculé.';$('schedule').innerHTML=slots.map(x=>`<tr><td>${x.date.split('-').reverse().join('/')}</td><td>${x.period}</td><td>${x.task}<div class="muted">${x.materiel}</div></td><td>½ journée</td><td>${x.effectif} pers.</td></tr>`).join('')}
+
+function schedule(){
+  let ts=values(),pending=new Map(ts.map(t=>[t.id,t])),done=new Set(),slots=[],cursor=$('debut').value||iso(),alerts=[];
+  if(!ts.length)return;
+  ts.filter(t=>t.effectif>Number($('equipe').value||1)).forEach(t=>alerts.push(`${t.nom} nécessite ${t.effectif} personnes, au-delà de l’effectif disponible.`));
+  let guard=0;
+  while(pending.size&&guard++<500){
+    let ready=[...pending.values()].filter(t=>t.apres.every(id=>done.has(id)||!ts.some(x=>x.id===id)));
+    if(!ready.length){alerts.push('Dépendances impossibles ou circulaires.');break}
+    let t=ready[0],day=workday([t.date,cursor].filter(Boolean).sort().slice(-1)[0]),n=Math.round(t.duree*2);
+    for(let h=0;h<n;h++){
+      day=workday(day);
+      slots.push({date:day,period:h%2?'Après-midi':'Matin',task:t.nom,id:t.id,effectif:t.effectif,materiel:t.materiel,client:$('client').value,chantier:current().nom||current().chantier});
+      if(h%2===1||h===n-1)day=addDays(day,1);
+    }
+    cursor=day;done.add(t.id);pending.delete(t.id);
+  }
+  plan=slots;
+  let dates=[...new Set(slots.map(x=>x.date))],end=dates.at(-1);
+  if(end&&$('limite').value&&end>$('limite').value)alerts.push('La date limite est dépassée.');
+  $('alerts').innerHTML=alerts.map(x=>'<div class="alert">'+x+'</div>').join('');
+  $('enddate').textContent=end?'Fin prévisionnelle : '+end.split('-').reverse().join('/')+' ('+dates.length+' jour(s) ouvré(s)).':'Aucun planning calculé.';
+  $('schedule').innerHTML=slots.map(x=>`<tr><td>${x.date.split('-').reverse().join('/')}</td><td>${x.period}</td><td>${x.task}<div class="muted">${x.materiel}</div></td><td>½ journée</td><td>${x.effectif} pers.</td></tr>`).join('');
+}
 $('recalc').onclick=schedule;
+
+// Impression / Export PDF du Devis
+$('generate-pdf').onclick=()=>{
+  const ts=values();
+  if(!ts.length){alert("Veuillez sélectionner au moins une tâche.");return;}
+  $('pdf-entreprise-name').textContent=$('entreprise').value||'Entreprise Paysagiste';
+  $('pdf-client-name').textContent=$('client').value||'Client';
+  $('pdf-project-name').textContent=current().nom||current().chantier;
+  $('pdf-date').textContent=new Date().toLocaleDateString('fr-FR');
+  
+  let totalTTC=0;
+  $('pdf-items').innerHTML=ts.map(t=>{
+    totalTTC+=t.prix;
+    return `<tr><td>${t.nom}</td><td>${t.effectif} pers.</td><td>${t.duree} j</td><td>${fmt(t.prix)} €</td></tr>`;
+  }).join('');
+  
+  let totalHT=totalTTC/1.1;
+  let tva=totalTTC-totalHT;
+  
+  $('pdf-total-ht').textContent=fmt(totalHT);
+  $('pdf-tva').textContent=fmt(tva);
+  $('pdf-total-ttc').textContent=fmt(totalTTC);
+  
+  window.print();
+};
+
 function esc(s){return String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n')}
-$('export').onclick=()=>{if(!plan.length){$('alerts').innerHTML='<div class="alert">Calculez d’abord le planning.</div>';return}let stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');let map=new Map();plan.forEach(x=>{let k=x.id+'|'+x.date;if(!map.has(k))map.set(k,{...x,periods:new Set()});map.get(k).periods.add(x.period)});let events=[...map.values()].map(x=>{let both=x.periods.size===2,date=x.date.replace(/-/g,''),start=date+(both||x.periods.has('Matin')?'T080000':'T130000'),end=date+(both||x.periods.has('Après-midi')?'T160000':'T120000');return `BEGIN:VEVENT\r\nUID:${esc(x.id)}-${date}@chantier-planner\r\nDTSTAMP:${stamp}Z\r\nDTSTART;TZID=Europe/Paris:${start}\r\nDTEND;TZID=Europe/Paris:${end}\r\nSUMMARY:${esc(x.task+' - '+x.chantier)}\r\nDESCRIPTION:${esc('Chantier : '+x.chantier+'\nClient : '+(x.client||'Non renseigné')+'\nEffectif : '+x.effectif+' personne(s)\nMatériel : '+x.materiel+'\nHoraires : '+(both?'8h-12h et 13h-16h':x.periods.has('Matin')?'8h-12h':'13h-16h'))}\r\nEND:VEVENT`});let cal='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Chantier Planner Paysager//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n'+events.join('\r\n')+'\r\nEND:VCALENDAR\r\n';let blob=new Blob(['\uFEFF'+cal],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='planning-chantier.ics';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-window.addEventListener('online',()=> $('offline').classList.remove('show'));window.addEventListener('offline',()=> $('offline').classList.add('show'));
+$('export').onclick=()=>{
+  if(!plan.length){$('alerts').innerHTML='<div class="alert">Calculez d’abord le planning.</div>';return}
+  let stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  let map=new Map();
+  plan.forEach(x=>{let k=x.id+'|'+x.date;if(!map.has(k))map.set(k,{...x,periods:new Set()});map.get(k).periods.add(x.period)});
+  let events=[...map.values()].map(x=>{
+    let both=x.periods.size===2,date=x.date.replace(/-/g,''),start=date+(both||x.periods.has('Matin')?'T080000':'T130000'),end=date+(both||x.periods.has('Après-midi')?'T160000':'T120000');
+    return `BEGIN:VEVENT\r\nUID:${esc(x.id)}-${date}@chantier-planner\r\nDTSTAMP:${stamp}Z\r\nDTSTART;TZID=Europe/Paris:${start}\r\nDTEND;TZID=Europe/Paris:${end}\r\nSUMMARY:${esc(x.task+' - '+x.chantier)}\r\nDESCRIPTION:${esc('Chantier : '+x.chantier+'\nClient : '+(x.client||'Non renseigné')+'\nEffectif : '+x.effectif+' personne(s)\nMatériel : '+x.materiel+'\nHoraires : '+(both?'8h-12h et 13h-16h':x.periods.has('Matin')?'8h-12h':'13h-16h'))}\r\nEND:VEVENT`
+  });
+  let cal='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Chantier Planner Paysager//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n'+events.join('\r\n')+'\r\nEND:VCALENDAR\r\n';
+  let blob=new Blob(['\uFEFF'+cal],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='planning-chantier.ics';a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000)
+};
+
+window.addEventListener('online',()=> $('offline').classList.remove('show'));
+window.addEventListener('offline',()=> $('offline').classList.add('show'));
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error));
 load();
 </script>
-</body></html>
+</body>
+</html>
