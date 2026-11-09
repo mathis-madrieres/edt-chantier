@@ -1,110 +1,82 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#245c43"><title>Planificateur de chantiers paysagers</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#245b43">
+<meta name="description" content="Planificateur de chantiers paysagers">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>Chantier Planner Paysager</title>
 <style>
-:root{--g:#245c43;--p:#eaf3ed;--ink:#203027;--muted:#65736a;--line:#dce5de;--bg:#f4f7f4}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui, sans-serif}
-header{background:var(--g);color:white;padding:22px max(18px,calc((100% - 1080px)/2))}
-header h1{margin:0;font-size:clamp(1.35rem,3vw,2rem)}header p{margin:5px 0 0;color:#e2eee6}
-main{max-width:1080px;margin:24px auto;padding:0 16px 36px}.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 3px 14px #173d2610}
-h2{font-size:1.1rem;margin:0 0 14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px}
-label{font-size:.85rem;font-weight:650;color:var(--muted)}input,select{font:inherit;border:1px solid #cbd7ce;border-radius:8px;padding:10px;background:white;color:var(--ink);width:100%;min-width:0}
-.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.toolbar select{max-width:460px}
-.task{border:1px solid var(--line);border-radius:11px;padding:14px;margin:10px 0}.task.off{opacity:.55;background:#f7f8f7}.tasktop{display:flex;gap:10px;align-items:flex-start}
-.tasktop input{width:19px;height:19px;margin:3px 0 0;accent-color:var(--g)}.taskname{font-weight:700;flex:1}.tasknum{font-size:.82rem;color:var(--muted)}
-.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 0 29px}.details label{display:block;margin-bottom:4px}.details input{padding:8px}
-.meta{margin:10px 0 0 29px;color:var(--muted);font-size:.86rem}.notice{background:#fff5e8;border:1px solid #f0d5ae;border-radius:9px;padding:12px 14px;color:#75450f}.error{background:#fff0ef;color:#8a211b;border-color:#efc1bd;white-space:pre-wrap}
-.summary{display:flex;gap:12px;flex-wrap:wrap}.metric{background:var(--p);padding:10px 14px;border-radius:10px;min-width:130px}.metric strong{display:block;font-size:1.25rem;color:var(--g)}.metric span,.muted{font-size:.84rem;color:var(--muted)}
-button{border:0;border-radius:9px;background:var(--g);color:white;font:inherit;font-weight:650;padding:10px 15px;cursor:pointer}button.secondary{background:#e8eee9;color:var(--g)}
-footer{text-align:center;color:var(--muted);font-size:.8rem;padding:10px}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.details{margin-left:0}.meta{margin-left:0}.panel{padding:14px}.toolbar select{max-width:none}.metric{flex:1}}
-</style></head>
+:root{--green:#245b43;--green2:#367653;--cream:#f5f7f1;--ink:#203027;--muted:#65736a;--line:#dce5dc;--red:#a83232}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--green);color:white;padding:24px max(18px,calc((100% - 1100px)/2));}
+header h1{margin:0;font-size:1.65rem}header p{margin:5px 0 0;color:#e0eee3}
+main{max-width:1100px;margin:22px auto;padding:0 16px 50px}.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 16px;box-shadow:0 2px 8px #183d2410}
+h2{font-size:1.15rem;margin:0 0 14px;color:var(--green)}h3{font-size:1rem;margin:0 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+label{display:block;font-weight:600;font-size:.9rem;color:#35483b}input,select,button{font:inherit}input,select{width:100%;padding:10px;border:1px solid #cbd8cd;border-radius:8px;background:white;color:var(--ink);margin-top:4px}
+button{border:0;border-radius:9px;padding:10px 15px;background:var(--green);color:white;font-weight:650;cursor:pointer}button.secondary{background:#e8f0e9;color:var(--green)}button:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.task{border:1px solid var(--line);border-radius:10px;padding:12px;margin:9px 0;display:grid;grid-template-columns:auto minmax(150px,1fr) repeat(3,minmax(105px,135px));gap:10px;align-items:center}
+.task small{display:block;color:var(--muted)}.task input[type=checkbox]{width:18px;height:18px;margin:0}.task input[type=number]{margin:0}.task-name{font-weight:650}
+.statrow{display:flex;gap:12px;flex-wrap:wrap}.stat{background:#edf4ed;padding:12px 15px;border-radius:10px;min-width:140px}.stat b{display:block;font-size:1.35rem;color:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f1f5f0;color:var(--green)}.tablewrap{overflow-x:auto}
+.alert{padding:11px 13px;border-radius:9px;background:#fff0ed;color:#8d2929;margin:10px 0}.notice{padding:11px 13px;background:#edf4ed;border-radius:9px;color:#365a41;margin:10px 0}.muted{color:var(--muted);font-size:.9rem}.offline{display:none;background:#fff1d6;color:#76500a;text-align:center;padding:7px}.offline.show{display:block}
+@media(max-width:760px){.task{grid-template-columns:auto 1fr 1fr}.task-name{grid-column:2/4}.task small{grid-column:2/4}.task label{font-size:.8rem}}
+</style>
+</head>
 <body>
-<header><h1>Planificateur de chantiers paysagers</h1><p>Préparation et estimation des moyens d’intervention</p></header>
+<div id="offline" class="offline">Vous êtes hors ligne — les données enregistrées restent consultables.</div>
+<header><h1>🌿 Chantier Planner Paysager</h1><p>Préparer, organiser et exporter vos chantiers d’aménagement paysager</p></header>
 <main>
-<div id="message" class="panel notice" role="status">Chargement de la bibliothèque…</div>
-<section class="panel"><h2>1. Chantier et interlocuteurs</h2>
-<div class="field" style="margin-bottom:14px"><label for="chantierSelect">Type de chantier</label><select id="chantierSelect" disabled></select></div>
+<section class="panel">
+<h2>1. Informations du chantier</h2>
 <div class="grid">
-<div class="field"><label for="entreprise">Entreprise</label><input id="entreprise" placeholder="Nom de l'entreprise"></div>
-<div class="field"><label for="contact">Contact entreprise</label><input id="contact" placeholder="Nom / téléphone / e-mail"></div>
-<div class="field"><label for="client">Client</label><input id="client" placeholder="Nom du client"></div>
-<div class="field"><label for="lieu">Lieu du chantier</label><input id="lieu" placeholder="Adresse du chantier"></div>
-</div></section>
-<section class="panel"><div class="toolbar"><h2>2. Tâches à réaliser</h2><button id="reset" class="secondary" type="button">Réinitialiser les valeurs</button></div>
-<div id="tasks"><p class="muted">Les tâches apparaîtront après le chargement.</p></div></section>
-<section class="panel"><h2>3. Récapitulatif</h2><div class="summary">
-<div class="metric"><strong id="duration">—</strong><span>Durée cumulée sélectionnée</span></div>
-<div class="metric"><strong id="peopleDays">—</strong><span>Jours-personnes estimés</span></div>
-<div class="metric"><strong id="count">—</strong><span>Tâches sélectionnées</span></div>
-</div><p class="muted">La durée cumulée additionne les tâches sélectionnées et ne tient pas compte d’un éventuel chevauchement entre tâches.</p></section>
-<div class="notice">Les durées et effectifs sont ceux du fichier de données fourni. Ils restent des estimations à adapter aux conditions réelles du chantier.</div>
-</main><footer>Les modifications effectuées ici ne modifient pas le fichier chantiers.json.</footer>
+<label>Type de chantier<select id="chantier"></select></label>
+<label>Entreprise<input id="entreprise" placeholder="Ex. Jardins du Sud"></label>
+<label>Client (nom fictif)<input id="client" placeholder="Ex. Client Démo"></label>
+<label>Date de début<input id="debut" type="date"></label>
+<label>Date limite (facultative)<input id="limite" type="date"></label>
+<label>Effectif disponible<input id="equipe" type="number" min="1" step="1" value="3"></label>
+</div>
+<p class="muted">Les données d’exemple sont des estimations pédagogiques : vérifiez les durées, les effectifs, la sécurité et les contraintes du terrain avant utilisation professionnelle.</p>
+</section>
+<section class="panel">
+<h2>2. Tâches du chantier</h2>
+<div id="tasks"></div>
+<div class="statrow"><div class="stat"><span>Durée totale des tâches sélectionnées</span><b id="total">0 j</b></div><div class="stat"><span>Effectif disponible</span><b id="crewstat">3 pers.</b></div></div>
+<div class="actions"><button id="recalc">Calculer le planning</button><button class="secondary" id="reset">Réinitialiser les tâches</button></div>
+</section>
+<section class="panel">
+<h2>3. Planning prévisionnel</h2><div id="alerts"></div><div id="enddate" class="notice">Choisissez une date de début puis cliquez sur « Calculer le planning ».</div>
+<div class="tablewrap"><table><thead><tr><th>Date</th><th>Demi-journée</th><th>Tâche</th><th>Durée planifiée</th><th>Équipe</th></tr></thead><tbody id="schedule"><tr><td colspan="5" class="muted">Aucun planning calculé.</td></tr></tbody></table></div>
+<div class="actions"><button id="export">Exporter le planning (.ics)</button></div>
+</section>
+<section class="panel">
+<h2>4. À propos</h2><p class="muted">Application pédagogique réalisée pour un TP de BTS Aménagements paysagers. Elle fonctionne avec un fichier de données séparé (<code>chantiers.json</code>) et peut être installée comme PWA après publication en HTTPS.</p>
+</section>
+</main>
 <script>
-"use strict";
-const select=document.getElementById("chantierSelect"), tasksEl=document.getElementById("tasks"), message=document.getElementById("message");
-let library=[], current=[];
-function fail(text){message.className="panel notice error";message.textContent=text;select.disabled=true;}
-function jsonError(error,source){
- const m=error.message||String(error), match=m.match(/position\\s+(\\d+)/i);
- if(!match)return `JSON invalide dans chantiers.json.\\n${m}`;
- const pos=Number(match[1]), line=source.slice(0,pos).split("\\n").length, col=pos-source.lastIndexOf("\\n",pos-1);
- return `JSON invalide vers la ligne ${line}, colonne ${col}.\\n${m}`;
-}
-function validate(data){
- if(!data||!Array.isArray(data.chantiers))throw Error('La propriété "chantiers" doit être une liste.');
- data.chantiers.forEach((c,ci)=>{
-  if(!c.chantier||!Array.isArray(c.taches))throw Error(`Chantier n°${ci+1} : nom ou liste "taches" manquant.`);
-  c.taches.forEach((t,ti)=>{
-   if(!t.id||!t.nom||!Number.isFinite(t.duree_jours)||!Number.isFinite(t.effectif)||!Array.isArray(t.materiel)||!Array.isArray(t.apres))
-    throw Error(`Chantier "${c.chantier}", tâche n°${ti+1} : champs requis invalides.`);
-   if(t.duree_jours<0||t.duree_jours*2%1!==0||t.effectif<0)throw Error(`Durée/effectif invalide : ${t.nom}.`);
-  });
- });
-}
-async function load(){
- try{
-  const response=await fetch("chantiers.json",{cache:"no-cache"});
-  if(!response.ok)throw Error(`Impossible de charger chantiers.json (HTTP ${response.status}). Vérifiez sa présence à côté de index.html.`);
-  const source=await response.text();let data;
-  try{data=JSON.parse(source)}catch(e){throw Error(jsonError(e,source))}
-  validate(data);library=data.chantiers;select.innerHTML="";
-  library.forEach((c,i)=>{const o=document.createElement("option");o.value=i;o.textContent=c.chantier;select.append(o)});
-  select.disabled=!library.length;message.textContent=library.length?"Bibliothèque chargée. Choisissez un chantier.":"Aucun chantier dans le fichier.";
-  if(library.length)renderSelected();
- }catch(e){fail(`Erreur de chargement des données.\\n${e.message}\\n\\nPlacez chantiers.json dans le même dossier que index.html et ouvrez l’application via un serveur web (GitHub Pages, par exemple).`)}
-}
-function renderSelected(){const c=library[Number(select.value)];if(!c)return;current=c.taches.map(t=>({...t,materiel:[...t.materiel],apres:[...t.apres],selected:true}));renderTasks()}
-function numberField(title,value,step,min,change){
- const box=document.createElement("div"),label=document.createElement("label"),input=document.createElement("input");
- label.textContent=title;input.type="number";input.min=min;input.step=step;input.value=value;
- input.addEventListener("change",()=>{let n=Number(input.value);if(!Number.isFinite(n)||n<min)n=min;if(step===.5)n=Math.round(n*2)/2;input.value=n;change(n)});
- box.append(label,input);return box;
-}
-function renderTasks(){
- tasksEl.innerHTML="";const chantier=library[Number(select.value)];
- current.forEach((t,i)=>{
-  const card=document.createElement("article");card.className="task";
-  const top=document.createElement("div");top.className="tasktop";
-  const check=document.createElement("input");check.type="checkbox";check.checked=t.selected;check.setAttribute("aria-label","Réaliser : "+t.nom);
-  check.addEventListener("change",()=>{t.selected=check.checked;card.classList.toggle("off",!t.selected);summary()});
-  const name=document.createElement("div");name.className="taskname";name.textContent=t.nom;
-  const order=document.createElement("span");order.className="tasknum";order.textContent="Tâche "+(i+1);top.append(check,name,order);card.append(top);
-  const details=document.createElement("div");details.className="details";
-  details.append(numberField("Durée (jours)",t.duree_jours,.5,0,v=>{t.duree_jours=v;summary()}),numberField("Effectif (personnes)",t.effectif,1,0,v=>{t.effectif=v;summary()}));card.append(details);
-  const meta=document.createElement("div");meta.className="meta";
-  const deps=t.apres.map(id=>chantier.taches.find(x=>x.id===id)?.nom||("ID inconnu : "+id));
-  meta.textContent="Matériel : "+(t.materiel.join(", ")||"Non renseigné")+" — Dépendances : "+(deps.join(", ")||"Aucune dépendance indiquée.");
-  card.append(meta);card.classList.toggle("off",!t.selected);tasksEl.append(card);
- });summary();
-}
-function summary(){
- const chosen=current.filter(t=>t.selected),d=chosen.reduce((s,t)=>s+t.duree_jours,0),p=chosen.reduce((s,t)=>s+t.duree_jours*t.effectif,0);
- document.getElementById("duration").textContent=d.toLocaleString("fr-FR")+" j";
- document.getElementById("peopleDays").textContent=p.toLocaleString("fr-FR")+" j-p";
- document.getElementById("count").textContent=chosen.length+" / "+current.length;
-}
-select.addEventListener("change",renderSelected);document.getElementById("reset").addEventListener("click",renderSelected);load();
-</script></body></html>
+let library=[],selected=new Set(),plan=[],taskDates={};
+const $=id=>document.getElementById(id),fmt=n=>String(n).replace('.',',');
+function duration(t){return t.sous_taches?t.sous_taches.reduce((s,x)=>s+Number(x.duree_jours||0),0):Number(t.duree_jours||0)}
+function iso(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+async function load(){try{const r=await fetch('./chantiers.json');if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();if(!Array.isArray(d.chantiers))throw Error('Structure JSON invalide');library=d.chantiers;$('chantier').innerHTML=library.map(c=>`<option value="${c.id}">${c.nom||c.chantier}</option>`).join('');$('debut').value=iso();renderTasks()}catch(e){$('tasks').innerHTML='<div class="alert">Impossible de charger chantiers.json : '+e.message+'</div>'}}
+function current(){return library.find(c=>c.id===$('chantier').value)}
+function renderTasks(){const c=current();if(!c)return;selected=new Set(c.taches.map(t=>t.id));$('tasks').innerHTML=c.taches.map(t=>`<div class="task"><input type="checkbox" data-check="${t.id}" checked><div class="task-name">${t.nom}<small>Après : ${t.apres?.length?t.apres.map(id=>c.taches.find(x=>x.id===id)?.nom||id).join(', '):'Aucune dépendance'}<br>Matériel : ${Array.isArray(t.materiel)?t.materiel.join(', '):t.materiel||'Non précisé'}</small></div><label>Durée (jours)<input type="number" min=".5" step=".5" value="${duration(t)}" data-duration="${t.id}"></label><label>Effectif<input type="number" min="1" step="1" value="${t.effectif||1}" data-crew="${t.id}"></label><label>Date de début<input type="date" value="${taskDates[t.id]||$('debut').value||iso()}" data-date="${t.id}"></label></div>`).join('');$('tasks').querySelectorAll('[data-check]').forEach(x=>x.onchange=()=>{x.checked?selected.add(x.dataset.check):selected.delete(x.dataset.check);updateTotal()});$('tasks').querySelectorAll('[data-duration],[data-crew]').forEach(x=>x.oninput=updateTotal);$('tasks').querySelectorAll('[data-date]').forEach(x=>x.onchange=()=>taskDates[x.dataset.date]=x.value);updateTotal()}
+function values(){return current().taches.filter(t=>selected.has(t.id)).map(t=>({id:t.id,nom:t.nom,apres:t.apres||[],duree:Math.max(.5,Number($(`[data-duration="${t.id}"]`)?.value||duration(t))),effectif:Math.max(1,Math.floor(Number($(`[data-crew="${t.id}"]`)?.value||t.effectif||1))),date:$(`[data-date="${t.id}"]`)?.value||$('debut').value,materiel:Array.isArray(t.materiel)?t.materiel.join(', '):(t.materiel||'')}))}
+function updateTotal(){$('total').textContent=fmt(values().reduce((s,t)=>s+t.duree,0))+' j';$('crewstat').textContent=$('equipe').value+' pers.'}
+$('chantier').onchange=()=>{plan=[];taskDates={};renderTasks();$('schedule').innerHTML='<tr><td colspan="5">Recalculez le planning.</td></tr>'};$('equipe').oninput=updateTotal;$('debut').onchange=()=>document.querySelectorAll('[data-date]').forEach(x=>{if(!taskDates[x.dataset.date])x.value=$('debut').value});
+$('reset').onclick=()=>{taskDates={};renderTasks();plan=[];$('schedule').innerHTML='<tr><td colspan="5">Planning réinitialisé.</td></tr>'};
+function addDays(d,n){let x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)}
+function workday(d){let x=d;while([0,6].includes(new Date(x+'T12:00:00').getDay()))x=addDays(x,1);return x}
+function schedule(){let ts=values(),pending=new Map(ts.map(t=>[t.id,t])),done=new Set(),slots=[],cursor=$('debut').value||iso(),alerts=[];if(!ts.length)return;ts.filter(t=>t.effectif>Number($('equipe').value||1)).forEach(t=>alerts.push(`${t.nom} nécessite ${t.effectif} personnes, au-delà de l’effectif disponible.`));let guard=0;while(pending.size&&guard++<500){let ready=[...pending.values()].filter(t=>t.apres.every(id=>done.has(id)||!ts.some(x=>x.id===id)));if(!ready.length){alerts.push('Dépendances impossibles ou circulaires.');break}let t=ready[0],day=workday([t.date,cursor].filter(Boolean).sort().slice(-1)[0]),n=Math.round(t.duree*2);for(let h=0;h<n;h++){day=workday(day);slots.push({date:day,period:h%2?'Après-midi':'Matin',task:t.nom,id:t.id,effectif:t.effectif,materiel:t.materiel,client:$('client').value,chantier:current().nom||current().chantier});if(h%2===1||h===n-1)day=addDays(day,1)}cursor=day;done.add(t.id);pending.delete(t.id)}plan=slots;let dates=[...new Set(slots.map(x=>x.date))],end=dates.at(-1);if(end&&$('limite').value&&end>$('limite').value)alerts.push('La date limite est dépassée.');$('alerts').innerHTML=alerts.map(x=>'<div class="alert">'+x+'</div>').join('');$('enddate').textContent=end?'Fin prévisionnelle : '+end.split('-').reverse().join('/')+' ('+dates.length+' jour(s) ouvré(s)).':'Aucun planning calculé.';$('schedule').innerHTML=slots.map(x=>`<tr><td>${x.date.split('-').reverse().join('/')}</td><td>${x.period}</td><td>${x.task}<div class="muted">${x.materiel}</div></td><td>½ journée</td><td>${x.effectif} pers.</td></tr>`).join('')}
+$('recalc').onclick=schedule;
+function esc(s){return String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n')}
+$('export').onclick=()=>{if(!plan.length){$('alerts').innerHTML='<div class="alert">Calculez d’abord le planning.</div>';return}let stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');let map=new Map();plan.forEach(x=>{let k=x.id+'|'+x.date;if(!map.has(k))map.set(k,{...x,periods:new Set()});map.get(k).periods.add(x.period)});let events=[...map.values()].map(x=>{let both=x.periods.size===2,date=x.date.replace(/-/g,''),start=date+(both||x.periods.has('Matin')?'T080000':'T130000'),end=date+(both||x.periods.has('Après-midi')?'T160000':'T120000');return `BEGIN:VEVENT\r\nUID:${esc(x.id)}-${date}@chantier-planner\r\nDTSTAMP:${stamp}Z\r\nDTSTART;TZID=Europe/Paris:${start}\r\nDTEND;TZID=Europe/Paris:${end}\r\nSUMMARY:${esc(x.task+' - '+x.chantier)}\r\nDESCRIPTION:${esc('Chantier : '+x.chantier+'\nClient : '+(x.client||'Non renseigné')+'\nEffectif : '+x.effectif+' personne(s)\nMatériel : '+x.materiel+'\nHoraires : '+(both?'8h-12h et 13h-16h':x.periods.has('Matin')?'8h-12h':'13h-16h'))}\r\nEND:VEVENT`});let cal='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Chantier Planner Paysager//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n'+events.join('\r\n')+'\r\nEND:VCALENDAR\r\n';let blob=new Blob(['\uFEFF'+cal],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='planning-chantier.ics';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+window.addEventListener('online',()=> $('offline').classList.remove('show'));window.addEventListener('offline',()=> $('offline').classList.add('show'));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error));
+load();
+</script>
+</body></html>
