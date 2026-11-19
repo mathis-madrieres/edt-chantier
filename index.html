@@ -345,6 +345,8 @@
     <h2>3. Chantiers (Lots) & Chiffrage du devis</h2>
     <div style="display:flex; flex-wrap:wrap; gap:0.7rem; margin-bottom:1rem;">
       <button type="button" onclick="ajouterChantier()">+ Ajouter un chantier / lot</button>
+      <select id="selectModeleChantier" style="max-width:340px;"></select>
+      <button type="button" class="outline" onclick="ajouterChantierDepuisModele()">Insérer ce chantier type</button>
       <button type="button" class="sec" onclick="importerChantiersJSON()">📥 Charger modèles (chantiers.json)</button>
       <select id="selectVarianteGlobale" style="max-width:340px;"></select>
       <button type="button" class="outline" onclick="appliquerVarianteGlobale()">Appliquer remise / forfait global</button>
@@ -442,6 +444,72 @@ const CATALOGUE_DEFAUT = [
   { id: "f1", type: "forfait", libelle: "Évacuation déchets verts / gravats", valeur: 160 }
 ];
 
+const MODELES_CHANTIERS_PAYSAGERS = [
+  {
+    titre: "Terrassement, préparation du sol & fosses de plantation",
+    contraintes: [],
+    taches: [
+      { designation: "Piquetage, traçage et préparation d'emprise", qte: 1, unite: "forfait", pu: 120, tva: 20, jours: 0.5 },
+      { designation: "Décaissement / terrassement léger et évacuation", qte: 25, unite: "m³", pu: 42, tva: 20, jours: 1.5 },
+      { designation: "Apport terre végétale et amendement organique", qte: 12, unite: "m³", pu: 55, tva: 20, jours: 1.0 },
+      { designation: "Creusement fosses de plantation (ex. 12 m³ / arbres)", qte: 12, unite: "m³", pu: 38, tva: 20, jours: 1.0 }
+    ]
+  },
+  {
+    titre: "Massifs arbustifs, vivaces & paillage (pouzzolane / BRF)",
+    contraintes: [],
+    taches: [
+      { designation: "Pose feutre géotextile de paillage", qte: 50, unite: "m²", pu: 4.5, tva: 20, jours: 0.5 },
+      { designation: "Fourniture et plantation arbustes et vivaces", qte: 35, unite: "u", pu: 28, tva: 10, jours: 1.5 },
+      { designation: "Paillage minéral (pouzzolane) ou organique (BRF)", qte: 50, unite: "m²", pu: 14, tva: 10, jours: 0.5 }
+    ]
+  },
+  {
+    titre: "Gazon de placage / Semis & Engazonnement",
+    contraintes: [],
+    taches: [
+      { designation: "Nivellement fin, roulage et préparation lit de semence", qte: 120, unite: "m²", pu: 5, tva: 20, jours: 1.0 },
+      { designation: "Semis gazon rustique / méditerranéen + engrais", qte: 120, unite: "m²", pu: 4.5, tva: 10, jours: 0.5 },
+      { designation: "Pose gazon de placage en rouleaux", qte: 80, unite: "m²", pu: 18, tva: 10, jours: 1.0 }
+    ]
+  },
+  {
+    titre: "Clôtures, ganivelles châtaignier & garde-corps",
+    contraintes: [],
+    taches: [
+      { designation: "Implantation et scellement piquets / supports", qte: 25, unite: "ml", pu: 24, tva: 20, jours: 1.0 },
+      { designation: "Pose clôture rigide / ganivelle châtaignier", qte: 25, unite: "ml", pu: 36, tva: 20, jours: 1.0 },
+      { designation: "Pose garde-corps métallique / sécurisation bordure", qte: 10, unite: "ml", pu: 95, tva: 20, jours: 1.0 }
+    ]
+  },
+  {
+    titre: "Allées, circulations, gravier & pas japonais",
+    contraintes: [],
+    taches: [
+      { designation: "Pose bordures de séparation (bois, acier ou béton)", qte: 30, unite: "ml", pu: 22, tva: 20, jours: 1.0 },
+      { designation: "Mise en œuvre fond de forme et géotextile", qte: 45, unite: "m²", pu: 16, tva: 20, jours: 1.0 },
+      { designation: "Épandage gravier décoratif / stabilisateur", qte: 45, unite: "m²", pu: 19, tva: 20, jours: 0.75 }
+    ]
+  },
+  {
+    titre: "Arrosage intégré (goutte-à-goutte & aspersion)",
+    contraintes: [],
+    taches: [
+      { designation: "Tranchée et pose canalisation PE + programmateur", qte: 35, unite: "ml", pu: 18, tva: 20, jours: 1.0 },
+      { designation: "Pose rampe goutte-à-goutte / tuyères et réglages", qte: 1, unite: "forfait", pu: 290, tva: 20, jours: 0.75 }
+    ]
+  },
+  {
+    titre: "Entretien, taille de haies, tonte & remise en état",
+    contraintes: [],
+    taches: [
+      { designation: "Taille de haies / arbustes et mise en forme", qte: 30, unite: "ml", pu: 11, tva: 20, jours: 1.0 },
+      { designation: "Débroussaillage, tonte et nettoyage complet du site", qte: 150, unite: "m²", pu: 3.5, tva: 20, jours: 0.75 },
+      { designation: "Évacuation des rémanents et déchets verts", qte: 1, unite: "forfait", pu: 140, tva: 20, jours: 0.5 }
+    ]
+  }
+];
+
 let catalogue = JSON.parse(localStorage.getItem(STORAGE_KEY_CATALOGUE)) || CATALOGUE_DEFAUT;
 let repertoireDevis = JSON.parse(localStorage.getItem(STORAGE_KEY_DEVIS)) || [];
 
@@ -527,6 +595,31 @@ async function importerChantiersJSON() {
   } catch (e) {
     alert("Impossible de charger chantiers.json (" + e.message + ").");
   }
+}
+
+/* --- MODÈLES DE CHANTIERS --- */
+function remplirSelectModelesChantiers() {
+  const sel = document.getElementById("selectModeleChantier");
+  if (!sel) return;
+  sel.innerHTML = `<option value="">-- Charger un chantier type --</option>` +
+    MODELES_CHANTIERS_PAYSAGERS.map((m, idx) =>
+      `<option value="${idx}">${m.titre}</option>`
+    ).join("");
+}
+
+function ajouterChantierDepuisModele() {
+  const sel = document.getElementById("selectModeleChantier");
+  const idx = parseInt(sel.value, 10);
+  if (isNaN(idx) || !MODELES_CHANTIERS_PAYSAGERS[idx]) {
+    alert("Sélectionnez d'abord un chantier type dans la liste.");
+    return;
+  }
+  const copie = JSON.parse(JSON.stringify(MODELES_CHANTIERS_PAYSAGERS[idx]));
+  copie.id = "lot-" + Date.now();
+  devisCourant.chantiers.push(copie);
+  sel.value = "";
+  afficherChantiers();
+  autoSave();
 }
 
 /* --- CATALOGUE --- */
@@ -745,412 +838,4 @@ function calculerTotauxDevis() {
 
   devisCourant.chantiers.forEach((lot) => {
     const pctContrainte = lot.contraintes.reduce((acc, c) => acc + c.valeur, 0);
-    const coeff = 1 + pctContrainte / 100;
-    let lotHT = 0;
-    let lotJours = 0;
-
-    lot.taches.forEach(t => {
-      const ligneHT = t.qte * t.pu * coeff;
-      const ligneJours = t.jours * coeff;
-      lotHT += ligneHT;
-      lotJours += ligneJours;
-      tvaParTaux[t.tva] = (tvaParTaux[t.tva] || 0) + ligneHT * (t.tva / 100);
-    });
-
-    totalHTBrut += lotHT;
-    totalJours += lotJours;
-    detailsLots.push({ titre: lot.titre, lotHT, coeff, pctContrainte });
-  });
-
-  let ajustementGlobalHT = 0;
-  devisCourant.variantesGlobales.forEach(v => {
-    if (v.type === "remise_pct") ajustementGlobalHT += totalHTBrut * (v.valeur / 100);
-    else if (v.type === "forfait") ajustementGlobalHT += v.valeur;
-  });
-
-  const totalHTFinal = Math.max(0, totalHTBrut + ajustementGlobalHT);
-  const ratioGlobal = totalHTBrut > 0 ? totalHTFinal / totalHTBrut : 1;
-  let totalTVA = 0;
-  Object.keys(tvaParTaux).forEach(taux => {
-    tvaParTaux[taux] *= ratioGlobal;
-    totalTVA += tvaParTaux[taux];
-  });
-
-  return { totalHTBrut, ajustementGlobalHT, totalHTFinal, totalTVA, totalTTC: totalHTFinal + totalTVA, totalJours, tvaParTaux, detailsLots };
-}
-
-function recalculerTout() {
-  const res = calculerTotauxDevis();
-  res.detailsLots.forEach((d, idx) => {
-    const el = document.getElementById(`sous-total-lot-${idx}`);
-    if (el) {
-      const infoCoeff = d.pctContrainte !== 0 ? ` (dont +${d.pctContrainte}% contraintes)` : "";
-      el.textContent = `Sous-total chantier : ${d.lotHT.toFixed(2)} € HT${infoCoeff}`;
-    }
-  });
-  document.getElementById("kpiCharge").textContent = `${res.totalJours.toFixed(2)} j/h`;
-  document.getElementById("kpiHT").textContent = `${res.totalHTFinal.toFixed(2)} €`;
-  document.getElementById("kpiTTC").textContent = `${res.totalTTC.toFixed(2)} €`;
-}
-
-/* --- PLANNING & .ICS --- */
-function genererPlanning() {
-  const dateStr = document.getElementById("dateDebutPlanning").value;
-  if (!dateStr) {
-    alert("Choisissez une date de début.");
-    return;
-  }
-  const effectif = Math.max(1, parseInt(document.getElementById("effectifEquipe").value) || 1);
-  const capaciteDemiJournee = effectif * 0.5;
-
-  let dateCourante = new Date(dateStr + "T08:00:00");
-  let creneau = 0;
-  let resteCapaciteCreneau = capaciteDemiJournee;
-  planningCalcule = [];
-
-  const avancerCreneau = () => {
-    creneau++;
-    if (creneau > 1) {
-      creneau = 0;
-      dateCourante.setDate(dateCourante.getDate() + 1);
-      while (dateCourante.getDay() === 0 || dateCourante.getDay() === 6) {
-        dateCourante.setDate(dateCourante.getDate() + 1);
-      }
-    }
-    resteCapaciteCreneau = capaciteDemiJournee;
-  };
-
-  while (dateCourante.getDay() === 0 || dateCourante.getDay() === 6) {
-    dateCourante.setDate(dateCourante.getDate() + 1);
-  }
-
-  devisCourant.chantiers.forEach(lot => {
-    const pctContrainte = lot.contraintes.reduce((acc, c) => acc + c.valeur, 0);
-    const coeff = 1 + pctContrainte / 100;
-    lot.taches.forEach(t => {
-      let chargeRestante = t.jours * coeff;
-      while (chargeRestante > 0.001) {
-        if (resteCapaciteCreneau <= 0.001) avancerCreneau();
-        const consomme = Math.min(chargeRestante, resteCapaciteCreneau);
-        planningCalcule.push({
-          date: dateCourante.toISOString().split("T")[0],
-          demiJournee: creneau === 0 ? "Matin" : "Après-midi",
-          chantier: lot.titre,
-          tache: t.designation || "Tâche sans nom",
-          charge: consomme.toFixed(2) + " j/h",
-          equipe: effectif + " pers."
-        });
-        chargeRestante -= consomme;
-        resteCapaciteCreneau -= consomme;
-      }
-    });
-  });
-
-  const tbody = document.getElementById("tbodyPlanning");
-  const resume = document.getElementById("resumeDatesPlanning");
-  if (planningCalcule.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6">Aucune tâche avec durée à planifier.</td></tr>`;
-    resume.textContent = "";
-    return;
-  }
-
-  const dateDebutEff = planningCalcule[0].date;
-  const dateFinEff = planningCalcule[planningCalcule.length - 1].date;
-  resume.textContent = `Début prévisionnel : ${dateDebutEff} — Fin prévisionnelle : ${dateFinEff} (${planningCalcule.length} créneaux)`;
-
-  tbody.innerHTML = planningCalcule.map(p => `
-    <tr>
-      <td>${p.date}</td>
-      <td>${p.demiJournee}</td>
-      <td><strong>${p.chantier}</strong></td>
-      <td>${p.tache}</td>
-      <td>${p.charge}</td>
-      <td>${p.equipe}</td>
-    </tr>
-  `).join("");
-}
-
-function exporterICS() {
-  if (planningCalcule.length === 0) {
-    alert("Calculez d'abord le planning avant d'exporter le fichier .ics.");
-    return;
-  }
-  let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//ChantierPlannerPaysager//FR\n";
-  planningCalcule.forEach((p, i) => {
-    const d = p.date.replace(/-/g, "");
-    const hDebut = p.demiJournee === "Matin" ? "080000" : "133000";
-    const hFin = p.demiJournee === "Matin" ? "120000" : "173000";
-    ics += `BEGIN:VEVENT\nUID:chantier-${Date.now()}-${i}@paysage\nDTSTART:${d}T${hDebut}\nDTEND:${d}T${hFin}\nSUMMARY:${p.chantier} - ${p.tache}\nDESCRIPTION:Équipe: ${p.equipe} | Durée: ${p.charge}\nEND:VEVENT\n`;
-  });
-  ics += "END:VCALENDAR";
-  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `planning-${document.getElementById("numDevis").value || "chantier"}.ics`;
-  a.click();
-}
-
-/* --- RÉPERTOIRE & RECHERCHE --- */
-function synchroniserChampsVersObjet() {
-  devisCourant.numero = document.getElementById("numDevis").value.trim() || "DEV-SANS-NUM";
-  devisCourant.date = document.getElementById("dateDevis").value;
-  devisCourant.entreprise = document.getElementById("infoEntreprise").value;
-  devisCourant.objet = document.getElementById("objetDevis").value;
-  devisCourant.effectif = parseInt(document.getElementById("effectifEquipe").value) || 3;
-  devisCourant.dateDebutPlanning = document.getElementById("dateDebutPlanning").value;
-  devisCourant.client = {
-    nom: document.getElementById("clientNom").value.trim(),
-    tel: document.getElementById("clientTel").value.trim(),
-    email: document.getElementById("clientEmail").value.trim(),
-    adresse: document.getElementById("clientAdresse").value.trim()
-  };
-}
-
-function chargerObjetVersChamps(d) {
-  devisCourant = JSON.parse(JSON.stringify(d));
-  document.getElementById("numDevis").value = devisCourant.numero || "";
-  document.getElementById("dateDevis").value = devisCourant.date || "";
-  document.getElementById("infoEntreprise").value = devisCourant.entreprise || "";
-  document.getElementById("objetDevis").value = devisCourant.objet || "";
-  document.getElementById("effectifEquipe").value = devisCourant.effectif || 3;
-  document.getElementById("dateDebutPlanning").value = devisCourant.dateDebutPlanning || new Date().toISOString().split("T")[0];
-  document.getElementById("clientNom").value = devisCourant.client?.nom || "";
-  document.getElementById("clientTel").value = devisCourant.client?.tel || "";
-  document.getElementById("clientEmail").value = devisCourant.client?.email || "";
-  document.getElementById("clientAdresse").value = devisCourant.client?.adresse || "";
-  afficherApercuLogo();
-  afficherChantiers();
-}
-
-function sauvegarderDevis() {
-  synchroniserChampsVersObjet();
-  if (!devisCourant.client.nom) {
-    alert("Indiquez au moins le nom du client avant d'enregistrer le devis.");
-    return;
-  }
-  const totaux = calculerTotauxDevis();
-  const enregistrement = {
-    ...JSON.parse(JSON.stringify(devisCourant)),
-    totalTTC: totaux.totalTTC,
-    dateSauvegarde: new Date().toLocaleDateString("fr-FR")
-  };
-  const idx = repertoireDevis.findIndex(item => item.id === enregistrement.id);
-  if (idx >= 0) repertoireDevis[idx] = enregistrement;
-  else repertoireDevis.unshift(enregistrement);
-
-  localStorage.setItem(STORAGE_KEY_DEVIS, JSON.stringify(repertoireDevis));
-  afficherRepertoire();
-  alert(`Devis ${enregistrement.numero} (${enregistrement.client.nom}) enregistré !`);
-}
-
-function chargerDevisDepuisRepertoire(id) {
-  const trouve = repertoireDevis.find(d => d.id === id);
-  if (trouve) {
-    chargerObjetVersChamps(trouve);
-    autoSave();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-}
-
-function dupliquerDevis(id) {
-  const trouve = repertoireDevis.find(d => d.id === id);
-  if (trouve) {
-    const copie = JSON.parse(JSON.stringify(trouve));
-    copie.id = Date.now();
-    copie.numero = copie.numero + "-COPIE";
-    chargerObjetVersChamps(copie);
-    autoSave();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-}
-
-function supprimerDevisRepertoire(id) {
-  if (!confirm("Supprimer définitivement ce devis du répertoire ?")) return;
-  repertoireDevis = repertoireDevis.filter(d => d.id !== id);
-  localStorage.setItem(STORAGE_KEY_DEVIS, JSON.stringify(repertoireDevis));
-  afficherRepertoire();
-}
-
-function nouveauDevisVierges() {
-  chargerObjetVersChamps({
-    id: Date.now(),
-    numero: "DEV-2026-" + String(repertoireDevis.length + 1).padStart(3, "0"),
-    date: new Date().toISOString().split("T")[0],
-    entreprise: document.getElementById("infoEntreprise").value,
-    objet: "",
-    logo: devisCourant.logo || "",
-    effectif: parseInt(document.getElementById("effectifEquipe").value) || 3,
-    dateDebutPlanning: new Date().toISOString().split("T")[0],
-    client: { nom: "", tel: "", email: "", adresse: "" },
-    chantiers: [{ id: "lot-" + Date.now(), titre: "Chantier 1 : Prestations paysagères", contraintes: [], taches: [] }],
-    variantesGlobales: []
-  });
-  autoSave();
-}
-
-function afficherRepertoire() {
-  const requete = document.getElementById("barreRecherche").value.toLowerCase().trim();
-  const conteneur = document.getElementById("listeDevisSauvegardes");
-
-  const filtres = repertoireDevis.filter(d => {
-    if (!requete) return true;
-    const c = d.client || {};
-    const texteIndex = [
-      d.numero, c.nom, c.tel, c.email, c.adresse, d.objet,
-      ...(d.chantiers || []).map(ch => ch.titre)
-    ].filter(Boolean).join(" ").toLowerCase();
-    return texteIndex.includes(requete);
-  });
-
-  if (filtres.length === 0) {
-    conteneur.innerHTML = `<p style="color:#6b7280; font-style:italic;">Aucun devis enregistré correspondant.</p>`;
-    return;
-  }
-
-  conteneur.innerHTML = filtres.map(d => `
-    <div class="devis-item">
-      <div>
-        <strong>${d.numero}</strong> — <span style="color:var(--vert-fonce); font-weight:700;">${d.client.nom || "Client sans nom"}</span>
-        <div style="font-size:0.85rem; color:#4b5563;">
-          📞 ${d.client.tel || "—"} | ✉️ ${d.client.email || "—"} | 📍 ${d.client.adresse || "—"}
-        </div>
-        <div style="font-size:0.82rem; color:#1f2922; margin-top:2px;">
-          Chantiers : ${(d.chantiers || []).map(c => c.titre).join(" • ")} — <strong>${(d.totalTTC || 0).toFixed(2)} € TTC</strong>
-        </div>
-      </div>
-      <div style="display:flex; gap:0.4rem;">
-        <button type="button" class="sm" onclick="chargerDevisDepuisRepertoire(${d.id})">Ouvrir</button>
-        <button type="button" class="outline sm" onclick="dupliquerDevis(${d.id})">Dupliquer</button>
-        <button type="button" class="danger sm" onclick="supprimerDevisRepertoire(${d.id})">Supprimer</button>
-      </div>
-    </div>
-  `).join("");
-}
-
-/* --- PDF --- */
-function imprimerPDF() {
-  synchroniserChampsVersObjet();
-  const res = calculerTotauxDevis();
-  const zone = document.getElementById("zone-impression");
-
-  let lignesTable = "";
-  devisCourant.chantiers.forEach((lot, idx) => {
-    const pct = lot.contraintes.reduce((a, c) => a + c.valeur, 0);
-    const coeff = 1 + pct / 100;
-    const texteContraintes = lot.contraintes.length
-      ? ` — Contraintes : ${lot.contraintes.map(c => c.libelle + " (+" + c.valeur + "%)").join(", ")}`
-      : "";
-
-    lignesTable += `<tr class="pdf-lot-row"><td colspan="6">Chantier ${idx + 1} : ${lot.titre}${texteContraintes}</td></tr>`;
-    lot.taches.forEach(t => {
-      const puAjuste = t.pu * coeff;
-      const totalLigneHT = t.qte * puAjuste;
-      lignesTable += `
-        <tr>
-          <td>${t.designation}</td>
-          <td>${t.qte}</td>
-          <td>${t.unite}</td>
-          <td>${puAjuste.toFixed(2)} €</td>
-          <td>${t.tva}%</td>
-          <td>${totalLigneHT.toFixed(2)} €</td>
-        </tr>
-      `;
-    });
-  });
-
-  devisCourant.variantesGlobales.forEach(v => {
-    const montant = v.type === "remise_pct" ? res.totalHTBrut * (v.valeur / 100) : v.valeur;
-    lignesTable += `
-      <tr>
-        <td colspan="5"><em>${v.libelle}</em></td>
-        <td><strong>${montant.toFixed(2)} €</strong></td>
-      </tr>
-    `;
-  });
-
-  const acompte = res.totalTTC * 0.30;
-  const dateDeb = planningCalcule.length ? planningCalcule[0].date : (devisCourant.dateDebutPlanning || "—");
-  const dateFin = planningCalcule.length ? planningCalcule[planningCalcule.length - 1].date : "—";
-  const logoHtml = devisCourant.logo ? `<img src="${devisCourant.logo}" class="pdf-logo" alt="Logo entreprise"><br>` : "";
-
-  zone.innerHTML = `
-    <div class="pdf-head">
-      <div>
-        ${logoHtml}
-        <h2 style="margin:0; color:#1e4620;">DEVIS</h2>
-        <p style="margin:4px 0;"><strong>Numéro :</strong> ${devisCourant.numero}</p>
-        <p style="margin:4px 0;"><strong>Date d’émission :</strong> ${devisCourant.date}</p>
-      </div>
-      <div style="text-align:right; font-size:0.86rem;">
-        <strong>Durée de validité : 3 mois</strong><br>
-        Début prévisionnel : <strong>${dateDeb}</strong><br>
-        Fin prévisionnelle : <strong>${dateFin}</strong><br>
-        Charge estimée : <strong>${res.totalJours.toFixed(2)} j/h</strong>
-      </div>
-    </div>
-
-    <div class="pdf-boxes">
-      <div class="pdf-box">
-        <strong>Entreprise</strong><br>${(devisCourant.entreprise || "").replace(/\n/g, "<br>")}
-      </div>
-      <div class="pdf-box">
-        <strong>Client :</strong><br>
-        ${devisCourant.client.nom || ""}<br>
-        ${devisCourant.client.adresse || ""}<br>
-        ${devisCourant.client.tel ? "Tél : " + devisCourant.client.tel : ""} ${devisCourant.client.email ? "— " + devisCourant.client.email : ""}
-      </div>
-    </div>
-
-    ${devisCourant.objet ? `<div class="pdf-objet"><strong>Objet :</strong> ${devisCourant.objet}</div>` : ""}
-
-    <table>
-      <thead>
-        <tr>
-          <th>Désignation</th>
-          <th>Qté</th>
-          <th>Unité</th>
-          <th>PU HT</th>
-          <th>TVA</th>
-          <th>Total HT</th>
-        </tr>
-      </thead>
-      <tbody>${lignesTable}</tbody>
-    </table>
-
-    <div class="pdf-footer-grid">
-      <div class="pdf-conditions">
-        <strong>Conditions de règlement :</strong><br>
-        Acompte de 30 % à la commande : <strong>${acompte.toFixed(2)} €</strong><br>
-        Solde à la fin des travaux, par virement ou chèque.
-      </div>
-
-      <table class="pdf-totaux">
-        <tr><th>Total HT</th><td>${res.totalHTFinal.toFixed(2)} €</td></tr>
-        <tr><th>Total TVA (20%)</th><td>${(res.tvaParTaux[20] || 0).toFixed(2)} €</td></tr>
-        <tr><th>Total TVA (10%)</th><td>${(res.tvaParTaux[10] || 0).toFixed(2)} €</td></tr>
-        <tr><th>Total TVA (5,5%)</th><td>${(res.tvaParTaux[5.5] || 0).toFixed(2)} €</td></tr>
-        <tr><th>Net à payer</th><td><strong>${res.totalTTC.toFixed(2)} €</strong></td></tr>
-      </table>
-    </div>
-
-    <div class="pdf-sign">
-      Signature du client (précédée de la mention « Bon pour accord ») :
-    </div>
-  `;
-
-  window.print();
-}
-
-/* --- INIT --- */
-afficherCatalogue();
-chargerObjetVersChamps(devisCourant);
-afficherRepertoire();
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
-  });
-}
-</script>
-</body>
-</html>
+    const coeff = 1 + pctContrainte
