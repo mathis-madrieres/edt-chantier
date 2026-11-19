@@ -69,6 +69,7 @@ th{background:#f1f5f0;color:var(--green)}
   .devis-header{display:flex;justify-content:space-between;gap:20px;margin-bottom:18px;border-bottom:2px solid var(--green);padding-bottom:12px}
   .devis-meta{background:#f7f9f7;border:1px solid #dce5dc;padding:10px 14px;border-radius:6px;margin-bottom:12px;font-size:.9rem}
   .devis-totals{margin-top:18px;text-align:right;font-size:1.05rem}
+  #pdf-logo { max-height: 80px; max-width: 250px; object-fit: contain; margin-bottom: 10px; display: block; }
 }
 
 @media(max-width:960px){
@@ -100,6 +101,13 @@ th{background:#f1f5f0;color:var(--green)}
     <label>Date limite (facultative)<input id="limite" type="date"></label>
     <label>Effectif disponible<input id="equipe" type="number" min="1" step="1" value="3"></label>
     <label>Taux de TVA (%)<select id="tva-rate"><option value="10" selected>10 % (Travaux d'aménagement / entretien)</option><option value="20">20 % (Taux normal / fournitures)</option></select></label>
+    <label>Logo de l'entreprise (optionnel)
+      <input id="logo-file" type="file" accept="image/png,image/jpeg,image/webp">
+    </label>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+      <img id="logo-preview" src="" alt="Aperçu logo" style="max-height:48px;max-width:140px;display:none;border-radius:6px;border:1px solid var(--line);padding:3px;background:#fff;">
+      <button type="button" class="secondary" id="clear-logo" style="padding:6px 10px;font-size:.82rem;display:none;">Supprimer le logo</button>
+    </div>
   </div>
   <p class="muted">Les données d’exemple sont des estimations pédagogiques : vérifiez les quantités, les durées, les effectifs et les prix avant validation professionnelle.</p>
 </section>
@@ -154,6 +162,7 @@ th{background:#f1f5f0;color:var(--green)}
 <div id="devis-print">
   <div class="devis-header">
     <div>
+      <img id="pdf-logo" src="" alt="Logo entreprise" style="max-height:80px;max-width:250px;object-fit:contain;display:none;margin-bottom:10px;">
       <h1 id="pdf-entreprise-name">Entreprise</h1>
       <p style="margin:2px 0;">Aménagement & Entretien Paysager</p>
       <p id="pdf-entreprise-info" style="margin:2px 0;font-size:.88rem;color:#444;"></p>
@@ -197,7 +206,7 @@ th{background:#f1f5f0;color:var(--green)}
 
 <script>
 const STORAGE_KEY = 'chantier_planner_state_v2';
-let library = [], selected = new Set(), plan = [], taskState = {};
+let library = [], selected = new Set(), plan = [], taskState = {}, currentLogo = '';
 
 const $ = id => document.getElementById(id);
 const fmt = n => Number(n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -213,6 +222,26 @@ function current() {
   return library.find(c => c.id === $('chantier').value);
 }
 
+function applyLogo(dataUrl) {
+  currentLogo = dataUrl || '';
+  const prev = $('logo-preview');
+  const pdfLogo = $('pdf-logo');
+  const clearBtn = $('clear-logo');
+  if (currentLogo) {
+    prev.src = currentLogo;
+    prev.style.display = 'inline-block';
+    pdfLogo.src = currentLogo;
+    pdfLogo.style.display = 'block';
+    clearBtn.style.display = 'inline-block';
+  } else {
+    prev.removeAttribute('src');
+    prev.style.display = 'none';
+    pdfLogo.removeAttribute('src');
+    pdfLogo.style.display = 'none';
+    clearBtn.style.display = 'none';
+  }
+}
+
 function saveState() {
   try {
     const payload = {
@@ -225,7 +254,8 @@ function saveState() {
       equipe: $('equipe').value,
       tvaRate: $('tva-rate').value,
       selected: [...selected],
-      taskState
+      taskState,
+      logoData: currentLogo
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     $('save-status').textContent = 'Sauvegardé à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -264,6 +294,7 @@ async function load() {
       if (saved.equipe) $('equipe').value = saved.equipe;
       if (saved.tvaRate) $('tva-rate').value = saved.tvaRate;
       taskState = saved.taskState || {};
+      applyLogo(saved.logoData || '');
       renderTasks(saved.selected);
     } else {
       renderTasks();
@@ -409,6 +440,30 @@ function updateTotal() {
   $('pricestat').textContent = fmt(totalTTC) + ' €';
 }
 
+// --- Gestionnaire du Logo ---
+$('logo-file').addEventListener('change', e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  if (file.size > 1500000) {
+    alert("Choisis plutôt une image de moins de 1,5 Mo pour garder une sauvegarde rapide.");
+    $('logo-file').value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    applyLogo(reader.result);
+    saveState();
+  };
+  reader.readAsDataURL(file);
+});
+
+$('clear-logo').addEventListener('click', () => {
+  $('logo-file').value = '';
+  applyLogo('');
+  saveState();
+});
+// --- Fin Gestionnaire du Logo ---
+
 $('chantier').onchange = () => {
   plan = [];
   taskState = {};
@@ -463,7 +518,6 @@ function workday(d) {
   return x;
 }
 
-// Gestion précise par demi-journées (slotIndex : 0 = jour 0 matin, 1 = jour 0 après-midi, etc.)
 function slotToDayPeriod(startDate, slotIndex) {
   const dayOffset = Math.floor(slotIndex / 2);
   const period = slotIndex % 2 === 0 ? 'Matin' : 'Après-midi';
