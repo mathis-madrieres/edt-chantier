@@ -2,85 +2,79 @@
    SERVICE WORKER — Chantier Planner Paysager (/edt-chantier/)
    ========================================================================== */
 
-// Incrémente ce numéro de version (ex: v1.0.1, v1.0.2) à chaque modification de index.html
-const CACHE_NAME = "chantier-planner-paysager-v1.0.0";
+const CACHE_VERSION = "edt-chantier-v2.0.0";
 
-// Ressources locales à mettre en cache dès l'installation
-const ASSETS_A_METTRE_EN_CACHE = [
+// Liste des ressources de l'application à pré-charger pour le mode hors ligne
+const FICHIERS_STATIQUES = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./manifest.json",
+  "./icon-192.png",
   "./chantiers.json"
 ];
 
-/* 1. INSTALLATION : mise en cache des fichiers essentiels */
+/* 1. INSTALLATION : mise en cache sécurisée des ressources */
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      // On met en cache les fichiers existants sans faire planter l'installation
-      // si un fichier optionnel (comme chantiers.json ou manifest) n'existe pas encore
-      for (const url of ASSETS_A_METTRE_EN_CACHE) {
+    caches.open(CACHE_VERSION).then(async (cache) => {
+      for (const fichier of FICHIERS_STATIQUES) {
         try {
-          const response = await fetch(url, { cache: "no-store" });
+          const response = await fetch(fichier, { cache: "no-store" });
           if (response.ok) {
-            await cache.put(url, response);
+            await cache.put(fichier, response);
           }
         } catch (err) {
-          // Fichier optionnel absent : on ignore proprement
+          // Si un fichier optionnel (ex: chantiers.json ou icon-192.png) est absent,
+          // on n'empêche pas l'installation du Service Worker.
         }
       }
     })
   );
-  // Active immédiatement le nouveau Service Worker
   self.skipWaiting();
 });
 
-/* 2. ACTIVATION : nettoyage des anciens caches */
+/* 2. ACTIVATION : suppression des anciennes versions de cache */
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((nomsCaches) => {
       return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+        nomsCaches
+          .filter((nom) => nom !== CACHE_VERSION)
+          .map((nom) => caches.delete(nom))
       );
     })
   );
-  // Prend le contrôle de tous les onglets ouverts immédiatement
   self.clients.claim();
 });
 
-/* 3. INTERCEPTION DES REQUÊTES (Stratégie Network-First avec repli Cache) */
+/* 3. FETCH : priorité au réseau, repli automatique sur le cache hors ligne */
 self.addEventListener("fetch", (event) => {
-  // On ne gère que les requêtes GET de la même origine
   if (event.request.method !== "GET") return;
-  const requestUrl = new URL(event.request.url);
-  if (requestUrl.origin !== self.location.origin) return;
+
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
     fetch(event.request)
-      .then((networkResponse) => {
-        // Si la réponse réseau est valide, on met à jour le cache en arrière-plan
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
+      .then((reponseReseau) => {
+        if (reponseReseau && reponseReseau.status === 200) {
+          const copieReponse = reponseReseau.clone();
+          caches.open(CACHE_VERSION).then((cache) => {
+            cache.put(event.request, copieReponse);
           });
         }
-        return networkResponse;
+        return reponseReseau;
       })
       .catch(async () => {
-        // Hors ligne ou réseau indisponible : on cherche dans le cache
-        const cachedResponse = await caches.match(event.request);
-        if (cachedResponse) return cachedResponse;
+        const reponseCache = await caches.match(event.request);
+        if (reponseCache) return reponseCache;
 
-        // Pour une navigation de page, repli sur index.html
         if (event.request.mode === "navigate") {
-          return caches.match("./index.html");
+          const fallbackHtml = await caches.match("./index.html");
+          if (fallbackHtml) return fallbackHtml;
         }
 
-        return new Response("Contenu indisponible hors ligne.", {
+        return new Response("Application indisponible hors ligne.", {
           status: 503,
           statusText: "Service Unavailable",
           headers: { "Content-Type": "text/plain; charset=utf-8" }
