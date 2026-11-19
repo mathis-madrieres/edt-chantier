@@ -56,25 +56,57 @@ th{background:#f1f5f0;color:var(--green)}
 .offline.show{display:block}
 .save-badge{font-size:.82rem;color:var(--muted);margin-left:auto;align-self:center}
 
-/* Style Devis PDF pour impression */
+/* Aperçu & Impression du Devis style modèle */
 #devis-print{display:none}
+.doc-sheet{background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif;max-width:860px;margin:0 auto;padding:24px;border:1px solid #d8ded8;border-radius:10px}
+.doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:18px}
+.doc-logo-wrap{min-width:130px}
+#pdf-logo{max-height:85px;max-width:220px;object-fit:contain;display:none}
+.doc-title-box{text-align:right}
+.doc-title-box h2{margin:0 0 8px;font-size:1.85rem;letter-spacing:1px;color:#111}
+.doc-title-box p{margin:3px 0;font-size:.9rem}
+.doc-parties{display:grid;grid-template-columns:1.1fr 0.9fr;gap:24px;margin-bottom:18px;align-items:start}
+.doc-seller{font-size:.88rem;line-height:1.45;padding:10px 12px}
+.doc-seller strong{font-size:1rem;display:block;margin-bottom:4px}
+.doc-buyer{background:#e9ecea;padding:12px 14px;font-size:.88rem;line-height:1.45}
+.doc-buyer-title{font-weight:700;margin-bottom:4px}
+.doc-info{font-size:.88rem;line-height:1.45;margin-bottom:14px}
+.doc-object{font-size:.92rem;font-weight:700;margin-bottom:10px}
+.doc-table{width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:18px}
+.doc-table th{background:#181a19;color:#fff;font-weight:700;padding:7px 8px;border:1px solid #181a19;text-align:center}
+.doc-table th:first-child{text-align:left}
+.doc-table td{padding:7px 8px;border-bottom:1px solid #cfd6d2;vertical-align:top}
+.doc-table td.num{text-align:right;white-space:nowrap}
+.doc-table td.center{text-align:center;white-space:nowrap}
+.doc-bottom{display:grid;grid-template-columns:1.15fr 0.85fr;gap:24px;align-items:start;margin-top:10px}
+.doc-terms{font-size:.86rem;line-height:1.5}
+.doc-terms-title{font-weight:700;margin-bottom:6px}
+.doc-summary{width:100%;border-collapse:collapse;font-size:.9rem}
+.doc-summary th{background:#181a19;color:#fff;text-align:center;padding:7px 10px;border:1px solid #181a19;width:52%}
+.doc-summary td{border:1px solid #cfd6d2;padding:7px 10px;text-align:right;font-weight:600;background:#fff}
+.doc-summary tr.net td,.doc-summary tr.net th{font-weight:700;font-size:.98rem}
+.doc-sign-wrap{display:flex;justify-content:flex-end;margin-top:20px}
+.doc-sign-box{width:46%;background:#e9ecea;padding:10px 12px;min-height:92px;font-size:.82rem}
+.doc-sign-label{text-align:center;margin-bottom:6px}
+.doc-footer{margin-top:22px;padding-top:10px;border-top:1px solid #e2e6e4;text-align:center;font-size:.76rem;color:#333}
+
 @media print{
-  body *{visibility:hidden}
-  #devis-print, #devis-print *{visibility:visible}
-  #devis-print{display:block;position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff}
-  #devis-print h1{color:var(--green);margin:0 0 4px}
-  #devis-print table{width:100%;border-collapse:collapse;margin-top:15px}
-  #devis-print th, #devis-print td{border:1px solid #ccc;padding:8px;text-align:left;font-size:.92rem}
-  #devis-print th{background-color:#f0f0f0}
-  .devis-header{display:flex;justify-content:space-between;gap:20px;margin-bottom:18px;border-bottom:2px solid var(--green);padding-bottom:12px}
-  .devis-meta{background:#f7f9f7;border:1px solid #dce5dc;padding:10px 14px;border-radius:6px;margin-bottom:12px;font-size:.9rem}
-  .devis-totals{margin-top:18px;text-align:right;font-size:1.05rem}
-  #pdf-logo { max-height: 80px; max-width: 250px; object-fit: contain; margin-bottom: 10px; display: block; }
+  body{background:#fff}
+  header,main{display:none !important}
+  #devis-print{display:block !important;position:static;width:100%}
+  .doc-sheet{border:0;border-radius:0;max-width:100%;padding:8px 12px}
+  .doc-table th,.doc-summary th{background:#181a19 !important;color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .doc-buyer,.doc-sign-box{background:#e9ecea !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
 @media(max-width:960px){
   .task{grid-template-columns:auto 1fr 1fr}
   .task-name{grid-column:2/4}
+}
+@media(max-width:680px){
+  .doc-top,.doc-parties,.doc-bottom{grid-template-columns:1fr;display:grid}
+  .doc-title-box{text-align:left}
+  .doc-sign-box{width:100%}
 }
 @media(max-width:520px){
   .task{grid-template-columns:auto 1fr}
@@ -95,12 +127,16 @@ th{background:#f1f5f0;color:var(--green)}
   <div class="grid">
     <label>Type de chantier<select id="chantier"></select></label>
     <label>Entreprise<input id="entreprise" value="Jardins & Paysages SARL" placeholder="Ex. Jardins du Sud"></label>
-    <label>Adresse / Contact entreprise<input id="entreprise-info" value="Montpellier (34) • Tél : 04 67 00 00 00" placeholder="Adresse, téléphone, SIRET..."></label>
-    <label>Client (nom / référence)<input id="client" value="M. et Mme Dupont" placeholder="Ex. Client Démo"></label>
+    <label>Adresse / Contact entreprise<input id="entreprise-info" value="27 Route de la voie, 34000 Montpellier • Tél : 04 67 00 00 00 • contact@jardins-sud.fr • SIRET : 914 842 723" placeholder="Adresse, tél, mail, SIRET..."></label>
+    <label>Client (nom / société)<input id="client" value="M. et Mme Dupont" placeholder="Ex. Client Démo"></label>
+    <label>Adresse du client<input id="client-adresse" value="14 rue des Oliviers, 34000 Montpellier, France" placeholder="Rue, code postal, ville..."></label>
     <label>Date de début<input id="debut" type="date"></label>
     <label>Date limite (facultative)<input id="limite" type="date"></label>
     <label>Effectif disponible<input id="equipe" type="number" min="1" step="1" value="3"></label>
     <label>Taux de TVA (%)<select id="tva-rate"><option value="10" selected>10 % (Travaux d'aménagement / entretien)</option><option value="20">20 % (Taux normal / fournitures)</option></select></label>
+    <label>Acompte à la commande (%)<input id="acompte-pct" type="number" min="0" max="100" step="5" value="30"></label>
+    <label>Validité &amp; garantie<input id="validite-info" value="Durée de validité : 3 mois • Garantie de reprise et pose : 1 an" placeholder="Validité, garantie..."></label>
+    <label>Pied de page (IBAN / TVA intracom.)<input id="pied-page-info" value="IBAN FR76 1234 5678 9101 365 - BIC AHYTRD8XXXX - N° TVA Intracommunautaire FR 09999999999" placeholder="IBAN, BIC, N° TVA..."></label>
     <label>Logo de l'entreprise (optionnel)
       <input id="logo-file" type="file" accept="image/png,image/jpeg,image/webp">
     </label>
@@ -145,7 +181,7 @@ th{background:#f1f5f0;color:var(--green)}
 </section>
 
 <section class="panel">
-  <h2>4. Devis & Facturation</h2>
+  <h2>4. Devis &amp; Facturation</h2>
   <p>Générez un devis imprimable au format PDF à transmettre à votre client (avec détail des quantités, unités et TVA).</p>
   <div class="actions">
     <button id="generate-pdf">Générer / Télécharger le Devis (PDF)</button>
@@ -158,58 +194,102 @@ th{background:#f1f5f0;color:var(--green)}
 </section>
 </main>
 
-<!-- Zone cachée dédiée à l'impression / export PDF du devis -->
+<!-- Devis structuré pour l'impression / export PDF -->
 <div id="devis-print">
-  <div class="devis-header">
-    <div>
-      <img id="pdf-logo" src="" alt="Logo entreprise" style="max-height:80px;max-width:250px;object-fit:contain;display:none;margin-bottom:10px;">
-      <h1 id="pdf-entreprise-name">Entreprise</h1>
-      <p style="margin:2px 0;">Aménagement & Entretien Paysager</p>
-      <p id="pdf-entreprise-info" style="margin:2px 0;font-size:.88rem;color:#444;"></p>
+  <div class="doc-sheet">
+    <div class="doc-top">
+      <div class="doc-logo-wrap">
+        <img id="pdf-logo" src="" alt="Logo entreprise">
+      </div>
+      <div class="doc-title-box">
+        <h2>DEVIS</h2>
+        <p><strong>Numéro :</strong> <span id="pdf-numero"></span></p>
+        <p><strong>Date d’émission :</strong> <span id="pdf-date"></span></p>
+      </div>
     </div>
-    <div style="text-align:right;">
-      <h2 style="margin:0 0 6px;color:var(--green);">DEVIS ESTIMATIF</h2>
-      <p style="margin:2px 0;"><strong>N° :</strong> <span id="pdf-numero"></span></p>
-      <p style="margin:2px 0;"><strong>Date :</strong> <span id="pdf-date"></span></p>
-      <p style="margin:2px 0;"><strong>Client :</strong> <strong id="pdf-client-name"></strong></p>
+
+    <div class="doc-parties">
+      <div class="doc-seller">
+        <strong id="pdf-entreprise-name">Entreprise</strong>
+        <div id="pdf-entreprise-info"></div>
+      </div>
+      <div class="doc-buyer">
+        <div class="doc-buyer-title">Client :</div>
+        <div id="pdf-client-name"></div>
+        <div id="pdf-client-adresse"></div>
+      </div>
     </div>
-  </div>
-  <div class="devis-meta">
-    <strong>Projet :</strong> <span id="pdf-project-name"></span> &nbsp;|&nbsp;
-    <strong>Début prévisionnel :</strong> <span id="pdf-debut"></span> &nbsp;|&nbsp;
-    <strong>Charge estimée :</strong> <span id="pdf-duree"></span>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th>Désignation de la prestation / tâche</th>
-        <th>Unité</th>
-        <th>Qté</th>
-        <th>P.U. TTC</th>
-        <th>Durée (j)</th>
-        <th>Total TTC</th>
-      </tr>
-    </thead>
-    <tbody id="pdf-items"></tbody>
-  </table>
-  <div class="devis-totals">
-    <p style="margin:4px 0;">Total HT : <strong><span id="pdf-total-ht"></span> €</strong></p>
-    <p style="margin:4px 0;">TVA (<span id="pdf-tva-label">10</span> %) : <strong><span id="pdf-tva"></span> €</strong></p>
-    <p style="margin:8px 0 0;font-size:1.3rem;color:var(--green);"><strong>TOTAL TTC : <span id="pdf-total-ttc"></span> €</strong></p>
-  </div>
-  <div style="margin-top:40px;font-size:0.85rem;color:#555;">
-    <p>Bon pour accord, date et signature du client (précédés de la mention « Lu et approuvé ») :</p>
-    <br><br><br>
-    <p><em>Devis valable 30 jours à compter de sa date d'émission.</em></p>
+
+    <div class="doc-info">
+      <strong>Informations additionnelles</strong><br>
+      <span id="pdf-validite-info">Durée de validité : 3 mois</span><br>
+      <span>Début prévisionnel : <strong id="pdf-debut"></strong> — Fin prévisionnelle : <strong id="pdf-fin"></strong> — Charge estimée : <strong id="pdf-duree"></strong></span>
+    </div>
+
+    <div class="doc-object">
+      Objet : <span id="pdf-project-name"></span>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>Designation</th>
+          <th>Quantité</th>
+          <th>Unité</th>
+          <th>Prix unitaire HT</th>
+          <th>% TVA</th>
+          <th>Total TVA</th>
+          <th>Total HT</th>
+        </tr>
+      </thead>
+      <tbody id="pdf-items"></tbody>
+    </table>
+
+    <div class="doc-bottom">
+      <div class="doc-terms">
+        <div class="doc-terms-title">Conditions de règlement :</div>
+        <p style="margin:2px 0;">Acompte de <span id="pdf-acompte-pct">30</span> % à la commande : <strong><span id="pdf-acompte-montant">0,00 €</span></strong></p>
+        <p style="margin:2px 0;">Solde à la fin des travaux, par virement ou chèque</p>
+      </div>
+
+      <table class="doc-summary">
+        <tbody>
+          <tr>
+            <th>Total HT</th>
+            <td id="pdf-total-ht">0,00 €</td>
+          </tr>
+          <tr>
+            <th>Total TVA (<span id="pdf-tva-label">10</span>%)</th>
+            <td id="pdf-tva">0,00 €</td>
+          </tr>
+          <tr class="net">
+            <th>Net à payer</th>
+            <td id="pdf-total-ttc">0,00 €</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-sign-wrap">
+      <div class="doc-sign-box">
+        <div class="doc-sign-label">Signature du client (précédée de la mention « Bon pour accord »)</div>
+      </div>
+    </div>
+
+    <div class="doc-footer" id="pdf-footer"></div>
   </div>
 </div>
 
 <script>
-const STORAGE_KEY = 'chantier_planner_state_v2';
-let library = [], selected = new Set(), plan = [], taskState = {}, currentLogo = '';
+const STORAGE_KEY = 'chantier_planner_state_v3';
+let library = [], selected = new Set(), plan = [], taskState = {}, currentLogo = '', plannedEndDate = '';
 
 const $ = id => document.getElementById(id);
 const fmt = n => Number(n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtQty = n => {
+  const num = Number(n || 0);
+  return Number.isInteger(num) ? String(num) : num.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+};
 const escHtml = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 
 function duration(t) {
@@ -249,10 +329,14 @@ function saveState() {
       entreprise: $('entreprise').value,
       entrepriseInfo: $('entreprise-info').value,
       client: $('client').value,
+      clientAdresse: $('client-adresse').value,
       debut: $('debut').value,
       limite: $('limite').value,
       equipe: $('equipe').value,
       tvaRate: $('tva-rate').value,
+      acomptePct: $('acompte-pct').value,
+      validiteInfo: $('validite-info').value,
+      piedPageInfo: $('pied-page-info').value,
       selected: [...selected],
       taskState,
       logoData: currentLogo
@@ -289,10 +373,14 @@ async function load() {
       if (saved.entreprise !== undefined) $('entreprise').value = saved.entreprise;
       if (saved.entrepriseInfo !== undefined) $('entreprise-info').value = saved.entrepriseInfo;
       if (saved.client !== undefined) $('client').value = saved.client;
+      if (saved.clientAdresse !== undefined) $('client-adresse').value = saved.clientAdresse;
       if (saved.debut) $('debut').value = saved.debut;
       if (saved.limite !== undefined) $('limite').value = saved.limite;
       if (saved.equipe) $('equipe').value = saved.equipe;
       if (saved.tvaRate) $('tva-rate').value = saved.tvaRate;
+      if (saved.acomptePct !== undefined) $('acompte-pct').value = saved.acomptePct;
+      if (saved.validiteInfo !== undefined) $('validite-info').value = saved.validiteInfo;
+      if (saved.piedPageInfo !== undefined) $('pied-page-info').value = saved.piedPageInfo;
       taskState = saved.taskState || {};
       applyLogo(saved.logoData || '');
       renderTasks(saved.selected);
@@ -354,7 +442,7 @@ function renderTasks(savedSelected = null) {
 
   $('tasks').querySelectorAll('[data-check]').forEach(x => x.onchange = () => {
     const id = x.dataset.check;
-    const row = $(`tasks`).querySelector(`[data-row="${id}"]`);
+    const row = $('tasks').querySelector(`[data-row="${id}"]`);
     if (x.checked) { selected.add(id); row?.classList.remove('unchecked'); }
     else { selected.delete(id); row?.classList.add('unchecked'); }
     updateTotal();
@@ -413,17 +501,27 @@ function refreshLineSubtotal(id) {
 function values() {
   const c = current();
   if (!c) return [];
+  const tvaRate = Number($('tva-rate').value || 10);
+  const coeff = 1 + tvaRate / 100;
   return c.taches.filter(t => selected.has(t.id)).map(t => {
     const st = ensureTaskDefaults(t);
     const quantite = Math.max(0, Number(st.quantite || 0));
-    const prixUnitaire = Math.max(0, Number(st.prixUnitaire || 0));
+    const prixUnitaireTTC = Math.max(0, Number(st.prixUnitaire || 0));
+    const prixUnitaireHT = prixUnitaireTTC / coeff;
+    const totalHT = quantite * prixUnitaireHT;
+    const totalTVA = totalHT * (tvaRate / 100);
+    const totalTTC = quantite * prixUnitaireTTC;
     return {
       id: t.id,
       nom: t.nom,
       unite: t.unite || 'forfait',
       quantite,
-      prixUnitaire,
-      prix: quantite * prixUnitaire,
+      prixUnitaireTTC,
+      prixUnitaireHT,
+      tauxTVA: tvaRate,
+      totalTVA,
+      totalHT,
+      prix: totalTTC,
       apres: t.apres || [],
       duree: Math.max(0.5, Number(st.duree || duration(t))),
       effectif: Math.max(1, Math.floor(Number(st.effectif || t.effectif || 1))),
@@ -437,17 +535,18 @@ function renderQuoteRows(ts) {
   const tbody = $('pdf-items');
   if (!tbody) return;
   if (!ts.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="muted">Aucune prestation sélectionnée.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="muted">Aucune prestation sélectionnée.</td></tr>';
     return;
   }
   tbody.innerHTML = ts.map(t => `
     <tr>
       <td>${escHtml(t.nom)}</td>
-      <td>${escHtml(t.unite)}</td>
-      <td>${fmt(t.quantite)}</td>
-      <td>${fmt(t.prixUnitaire)} €</td>
-      <td>${fmt(t.duree)} j</td>
-      <td><strong>${fmt(t.prix)} €</strong></td>
+      <td class="center">${fmtQty(t.quantite)}</td>
+      <td class="center">${escHtml(t.unite)}</td>
+      <td class="num">${fmt(t.prixUnitaireHT)} €</td>
+      <td class="center">${t.tauxTVA}%</td>
+      <td class="num">${fmt(t.totalTVA)} €</td>
+      <td class="num">${fmt(t.totalHT)} €</td>
     </tr>
   `).join('');
 }
@@ -455,10 +554,12 @@ function renderQuoteRows(ts) {
 function updateTotal() {
   const ts = values();
   const totalDays = ts.reduce((s, t) => s + t.duree, 0);
-  const totalTTC = ts.reduce((s, t) => s + t.prix, 0);
+  const totalHT = ts.reduce((s, t) => s + t.totalHT, 0);
+  const totalTVA = ts.reduce((s, t) => s + t.totalTVA, 0);
+  const totalTTC = totalHT + totalTVA;
   const tvaRate = Number($('tva-rate').value || 10);
-  const totalHT = totalTTC / (1 + tvaRate / 100);
-  const tva = totalTTC - totalHT;
+  const acomptePct = Math.max(0, Math.min(100, Number($('acompte-pct').value || 0)));
+  const acompteMontant = totalTTC * (acomptePct / 100);
 
   $('total').textContent = fmt(totalDays) + ' j';
   $('crewstat').textContent = ($('equipe').value || 1) + ' pers.';
@@ -467,9 +568,11 @@ function updateTotal() {
 
   renderQuoteRows(ts);
   $('pdf-tva-label').textContent = tvaRate;
-  $('pdf-total-ht').textContent = fmt(totalHT);
-  $('pdf-tva').textContent = fmt(tva);
-  $('pdf-total-ttc').textContent = fmt(totalTTC);
+  $('pdf-total-ht').textContent = fmt(totalHT) + ' €';
+  $('pdf-tva').textContent = fmt(totalTVA) + ' €';
+  $('pdf-total-ttc').textContent = fmt(totalTTC) + ' €';
+  $('pdf-acompte-pct').textContent = acomptePct;
+  $('pdf-acompte-montant').textContent = fmt(acompteMontant) + ' €';
 }
 
 // --- Gestionnaire du Logo ---
@@ -498,13 +601,14 @@ $('clear-logo').addEventListener('click', () => {
 
 $('chantier').onchange = () => {
   plan = [];
+  plannedEndDate = '';
   taskState = {};
   renderTasks();
   $('schedule').innerHTML = '<tr><td colspan="5" class="muted">Recalculez le planning.</td></tr>';
   saveState();
 };
 
-['entreprise', 'entreprise-info', 'client', 'limite', 'equipe', 'tva-rate'].forEach(id => {
+['entreprise', 'entreprise-info', 'client', 'client-adresse', 'limite', 'equipe', 'tva-rate', 'acompte-pct', 'validite-info', 'pied-page-info'].forEach(id => {
   $(id).addEventListener('input', () => { updateTotal(); saveState(); });
 });
 
@@ -520,6 +624,7 @@ $('reset').onclick = () => {
   taskState = {};
   renderTasks();
   plan = [];
+  plannedEndDate = '';
   $('alerts').innerHTML = '';
   $('enddate').textContent = 'Tâches réinitialisées aux valeurs par défaut.';
   $('schedule').innerHTML = '<tr><td colspan="5" class="muted">Planning réinitialisé.</td></tr>';
@@ -529,6 +634,7 @@ $('reset').onclick = () => {
 $('clear-storage').onclick = () => {
   localStorage.removeItem(STORAGE_KEY);
   taskState = {};
+  plannedEndDate = '';
   $('debut').value = iso();
   $('limite').value = '';
   renderTasks();
@@ -627,6 +733,7 @@ function schedule() {
   plan = slots;
   const dates = [...new Set(slots.map(x => x.date))];
   const end = dates.at(-1);
+  plannedEndDate = end || '';
 
   if (end && $('limite').value && end > $('limite').value) {
     alerts.push(`La date limite (${$('limite').value.split('-').reverse().join('/')}) est dépassée.`);
@@ -656,15 +763,19 @@ $('generate-pdf').onclick = () => {
   updateTotal();
 
   const now = new Date();
-  const devisNum = `DEV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  const devisNum = `DE-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}`;
 
   $('pdf-entreprise-name').textContent = $('entreprise').value || 'Entreprise Paysagiste';
-  $('pdf-entreprise-info').textContent = $('entreprise-info').value || '';
+  $('pdf-entreprise-info').innerHTML = escHtml($('entreprise-info').value || '').replace(/\s*•\s*/g, '<br>');
   $('pdf-client-name').textContent = $('client').value || 'Client';
+  $('pdf-client-adresse').innerHTML = escHtml($('client-adresse').value || '').replace(/,\s*/g, '<br>');
+  $('pdf-validite-info').innerHTML = escHtml($('validite-info').value || 'Durée de validité : 3 mois').replace(/\s*•\s*/g, '<br>');
   $('pdf-project-name').textContent = current().nom || current().chantier;
   $('pdf-numero').textContent = devisNum;
   $('pdf-date').textContent = now.toLocaleDateString('fr-FR');
   $('pdf-debut').textContent = $('debut').value ? $('debut').value.split('-').reverse().join('/') : 'À définir';
+  $('pdf-fin').textContent = plannedEndDate ? plannedEndDate.split('-').reverse().join('/') : 'À calculer';
+  $('pdf-footer').textContent = $('pied-page-info').value || '';
 
   const totalCharge = ts.reduce((s, t) => s + t.duree, 0);
   $('pdf-duree').textContent = fmt(totalCharge) + ' j';
