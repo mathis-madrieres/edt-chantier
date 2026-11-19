@@ -1,277 +1,302 @@
 {
   "chantiers": [
     {
-      "id": "plantation-haie",
-      "nom": "Plantation d’une haie",
+      "id": "entretien-tonte-pelouse",
+      "categorie": "Entretien",
+      "nom": "Entretien — Tonte de pelouse et finitions",
       "taches": [
         {
-          "id": "reperage",
-          "nom": "Repérage et préparation du terrain",
+          "id": "ramassage-objets",
+          "nom": "Ramassage des obstacles et contrôle de la zone",
           "duree_jours": 0.5,
           "effectif": 1,
           "unite": "forfait",
           "quantite_defaut": 1,
-          "prix_moyen_ttc": 150.00,
-          "materiel": "Mètre, piquets, cordeau",
+          "prix_moyen_ttc": 65.00,
+          "materiel": "Gants, EPI, sac poubelle",
           "apres": []
         },
         {
-          "id": "approvisionnement",
-          "nom": "Réception et contrôle des végétaux",
+          "id": "tonte-bordures",
+          "nom": "Tonte du gazon, coupe-bordures et soufflage",
           "duree_jours": 0.5,
-          "effectif": 2,
-          "unite": "forfait",
-          "quantite_defaut": 1,
-          "prix_moyen_ttc": 200.00,
-          "materiel": "Véhicule, bâche, outils de manutention",
-          "apres": ["reperage"]
-        },
-        {
-          "id": "preparation-sol",
-          "nom": "Préparation du sol et amendement",
-          "duree_jours": 1,
-          "effectif": 2,
-          "unite": "ml",
-          "quantite_defaut": 20,
-          "prix_moyen_ttc": 17.50,
-          "materiel": "Bêche, motoculteur si adapté, amendement",
-          "apres": ["reperage"]
-        },
-        {
-          "id": "plantation",
-          "nom": "Mise en place et plantation des arbustes",
-          "duree_jours": 1.5,
-          "effectif": 2,
-          "unite": "ml",
-          "quantite_defaut": 20,
-          "prix_moyen_ttc": 27.50,
-          "materiel": "Pelle, transplantoir, sécateur, arrosoir",
-          "apres": ["approvisionnement", "preparation-sol"]
-        },
-        {
-          "id": "arrosage",
-          "nom": "Arrosage copieux et cuvettes",
-          "duree_jours": 0.5,
-          "effectif": 2,
-          "unite": "ml",
-          "quantite_defaut": 20,
-          "prix_moyen_ttc": 6.00,
-          "materiel": "Tuyau, arrosoir",
-          "apres": ["plantation"]
-        },
-        {
-          "id": "finition",
-          "nom": "Paillage, nettoyage et contrôle final",
-          "duree_jours": 0.5,
-          "effectif": 2,
-          "unite": "ml",
-          "quantite_defaut": 20,
-          "prix_moyen_ttc": 9.00,
-          "materiel": "Paillage, râteau, balai",
-          "apres": ["arrosage"]
+          "effectif": 1,
+          "unite": "m²",
+          "quantite_defaut": 250,
+          "prix_moyen_ttc": 0.65,
+          "materiel": "Tondeuse, coupe-bordures, souffleur",
+          "apres": ["ramassage-objets"]
         }
       ]
     },
     {
-      "id": "creation-pelouse",
-      "nom": "Création d’une pelouse par semis",
+      "id": "entretien-scarification-sursemis",
+      "categorie": "Entretien",
+      "nom": "Entretien — Scarification, regarnissage et fertilisation gazon",
       "taches": [
         {
-          "id": "diagnostic",
-          "nom": "Diagnostic du terrain et implantation",
+          "id": "tonte-basse-scarif",
+          "nom": "Tonte rase et scarification du feutre",
           "duree_jours": 0.5,
-          "effectif": 1,
-          "unite": "forfait",
-          "quantite_defaut": 1,
-          "prix_moyen_ttc": 120.00,
-          "materiel": "Mètre, piquets, cordeau",
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 150,
+          "prix_moyen_ttc": 1.80,
+          "materiel": "Scarificateur, râteau, sacs ou remorque",
           "apres": []
         },
         {
-          "id": "decompactage",
-          "nom": "Décompactage et préparation du sol",
-          "duree_jours": 1,
-          "effectif": 2,
-          "unite": "m²",
-          "quantite_defaut": 100,
-          "prix_moyen_ttc": 4.00,
-          "materiel": "Motobineuse ou motoculteur, EPI",
-          "apres": ["diagnostic"]
-        },
-        {
-          "id": "nivellement",
-          "nom": "Apport de terre végétale et nivellement",
-          "duree_jours": 1,
-          "effectif": 2,
-          "unite": "m²",
-          "quantite_defaut": 100,
-          "prix_moyen_ttc": 4.50,
-          "materiel": "Terre végétale, brouette, râteau, règle",
-          "apres": ["decompactage"]
-        },
-        {
-          "id": "semis",
-          "nom": "Semis et enfouissement léger des graines",
+          "id": "sursemis-engrais",
+          "nom": "Sursemis, apport d’engrais organique et roulage",
           "duree_jours": 0.5,
           "effectif": 2,
           "unite": "m²",
-          "quantite_defaut": 100,
-          "prix_moyen_ttc": 2.50,
-          "materiel": "Semences, semoir, râteau",
-          "apres": ["nivellement"]
-        },
-        {
-          "id": "roulage",
-          "nom": "Roulage et premier arrosage",
-          "duree_jours": 0.5,
-          "effectif": 1,
-          "unite": "m²",
-          "quantite_defaut": 100,
-          "prix_moyen_ttc": 1.30,
-          "materiel": "Rouleau, tuyau d’arrosage",
-          "apres": ["semis"]
-        },
-        {
-          "id": "repli",
-          "nom": "Nettoyage et réception du chantier",
-          "duree_jours": 0.5,
-          "effectif": 1,
-          "unite": "forfait",
-          "quantite_defaut": 1,
-          "prix_moyen_ttc": 100.00,
-          "materiel": "Balai, outils de nettoyage",
-          "apres": ["roulage"]
+          "quantite_defaut": 150,
+          "prix_moyen_ttc": 2.40,
+          "materiel": "Semences gazon, engrais, semoir, rouleau",
+          "apres": ["tonte-basse-scarif"]
         }
       ]
     },
     {
-      "id": "amenagement-massif",
-      "nom": "Création d’un massif paysager",
+      "id": "entretien-taille-haies",
+      "categorie": "Entretien",
+      "nom": "Entretien — Taille de haies (persistantes, caduques, champêtres)",
       "taches": [
         {
-          "id": "conception",
-          "nom": "Repérage, traçage et implantation du massif",
+          "id": "baches-preparation",
+          "nom": "Pose des bâches de collecte et repérage",
           "duree_jours": 0.5,
           "effectif": 1,
           "unite": "forfait",
           "quantite_defaut": 1,
-          "prix_moyen_ttc": 140.00,
-          "materiel": "Plan, cordeau, piquets, bombe de traçage",
+          "prix_moyen_ttc": 85.00,
+          "materiel": "Bâches, cordeau, EPI",
           "apres": []
         },
         {
-          "id": "desherbage",
-          "nom": "Désherbage et nettoyage de la zone",
-          "duree_jours": 0.5,
-          "effectif": 2,
-          "unite": "m²",
-          "quantite_defaut": 25,
-          "prix_moyen_ttc": 6.40,
-          "materiel": "Binette, outils manuels, sacs",
-          "apres": ["conception"]
-        },
-        {
-          "id": "sol",
-          "nom": "Préparation et amendement du sol",
-          "duree_jours": 0.5,
-          "effectif": 2,
-          "unite": "m²",
-          "quantite_defaut": 25,
-          "prix_moyen_ttc": 8.80,
-          "materiel": "Bêche, fourche, compost ou amendement",
-          "apres": ["desherbage"]
-        },
-        {
-          "id": "vegetaux",
-          "nom": "Répartition et plantation des végétaux",
+          "id": "taille-haie-ramassage",
+          "nom": "Taille, ramassage des rémanents et nettoyage",
           "duree_jours": 1,
           "effectif": 2,
-          "unite": "m²",
+          "unite": "ml",
           "quantite_defaut": 25,
-          "prix_moyen_ttc": 19.20,
-          "materiel": "Végétaux, transplantoir, pelle, sécateur",
-          "apres": ["sol"]
+          "prix_moyen_ttc": 14.50,
+          "materiel": "Taille-haie, perche, souffleur, fourche",
+          "apres": ["baches-preparation"]
+        }
+      ]
+    },
+    {
+      "id": "entretien-taille-arbustes-rosiers",
+      "categorie": "Entretien",
+      "nom": "Entretien — Taille d’arbustes d’ornement et de rosiers",
+      "taches": [
+        {
+          "id": "taille-selective",
+          "nom": "Taille raisonnée des bois morts et rameaux",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 160.00,
+          "materiel": "Sécateur, cisaille, échenilloir, EPI",
+          "apres": []
         },
         {
-          "id": "paillage",
-          "nom": "Mise en place du paillage et arrosage",
+          "id": "evacuation-taille-arbustes",
+          "nom": "Ramassage et évacuation des déchets verts",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 95.00,
+          "materiel": "Brouette, fourche, remorque ou broyeur",
+          "apres": ["taille-selective"]
+        }
+      ]
+    },
+    {
+      "id": "entretien-massifs-binage-paillage",
+      "categorie": "Entretien",
+      "nom": "Entretien — Désherbage de massifs, binage et renouvellement de paillage",
+      "taches": [
+        {
+          "id": "binage-desherbage",
+          "nom": "Désherbage manuel et binage des massifs",
           "duree_jours": 0.5,
           "effectif": 2,
           "unite": "m²",
-          "quantite_defaut": 25,
-          "prix_moyen_ttc": 8.40,
-          "materiel": "Paillage, tuyau, arrosoir",
-          "apres": ["vegetaux"]
+          "quantite_defaut": 30,
+          "prix_moyen_ttc": 7.50,
+          "materiel": "Binette, griffe, seaux, gants",
+          "apres": []
         },
         {
-          "id": "reception",
-          "nom": "Nettoyage et contrôle des finitions",
+          "id": "recharge-paillage",
+          "nom": "Apport et répartition du paillage (écorces, copeaux ou gravier)",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 30,
+          "prix_moyen_ttc": 9.50,
+          "materiel": "Paillage, brouette, râteau",
+          "apres": ["binage-desherbage"]
+        }
+      ]
+    },
+    {
+      "id": "entretien-feuilles-dechets-verts",
+      "categorie": "Entretien",
+      "nom": "Entretien — Ramassage des feuilles mortes et nettoyage d’automne/hiver",
+      "taches": [
+        {
+          "id": "ramassage-feuilles",
+          "nom": "Rassemblement des feuilles sur pelouses, allées et massifs",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 300,
+          "prix_moyen_ttc": 1.10,
+          "materiel": "Souffleur, balai à gazon, bâche",
+          "apres": []
+        },
+        {
+          "id": "evacuation-ou-broyage",
+          "nom": "Évacuation en déchetterie ou mise en tas de compostage",
           "duree_jours": 0.5,
           "effectif": 1,
           "unite": "forfait",
           "quantite_defaut": 1,
           "prix_moyen_ttc": 110.00,
-          "materiel": "Balai, râteau",
-          "apres": ["paillage"]
+          "materiel": "Remorque, fourche, bâche",
+          "apres": ["ramassage-feuilles"]
         }
       ]
     },
     {
-      "id": "pose-cloture",
-      "nom": "Pose d’une clôture rigide",
+      "id": "entretien-desherbage-allees",
+      "categorie": "Entretien",
+      "nom": "Entretien — Désherbage et décompactage des allées gravillonnées / stabilisées",
       "taches": [
         {
-          "id": "piquetage-cloture",
-          "nom": "Piquetage, alignement et repérage réseaux",
+          "id": "arrachage-adventices",
+          "nom": "Arrachage manuel / thermique des adventices sur allées",
           "duree_jours": 0.5,
-          "effectif": 2,
-          "unite": "forfait",
-          "quantite_defaut": 1,
-          "prix_moyen_ttc": 180.00,
-          "materiel": "Cordeau, piquets, niveau laser, détecteur",
+          "effectif": 1,
+          "unite": "m²",
+          "quantite_defaut": 80,
+          "prix_moyen_ttc": 2.60,
+          "materiel": "Désherbeur thermique ou outil manuel, extincteur/EPI",
           "apres": []
         },
         {
-          "id": "scellement-poteaux",
-          "nom": "Forage et scellement des poteaux",
-          "duree_jours": 1,
-          "effectif": 2,
-          "unite": "ml",
-          "quantite_defaut": 25,
-          "prix_moyen_ttc": 32.00,
-          "materiel": "Tarière, bétonnière, niveau, pelles",
-          "apres": ["piquetage-cloture"]
+          "id": "reprofilage-allee",
+          "nom": "Ratissage et remise à niveau du gravier / stabilisé",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "m²",
+          "quantite_defaut": 80,
+          "prix_moyen_ttc": 2.20,
+          "materiel": "Râteau, brouette, rouleau léger",
+          "apres": ["arrachage-adventices"]
+        }
+      ]
+    },
+    {
+      "id": "entretien-nettoyage-terrasse-dalles",
+      "categorie": "Entretien",
+      "nom": "Entretien — Nettoyage et démoussage de terrasse, dallage ou muret",
+      "taches": [
+        {
+          "id": "traitement-mousse",
+          "nom": "Brossage et application d’un anti-mousse adapté",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "m²",
+          "quantite_defaut": 40,
+          "prix_moyen_ttc": 4.50,
+          "materiel": "Balai-brosse, pulvérisateur, EPI",
+          "apres": []
         },
         {
-          "id": "pose-panneaux",
-          "nom": "Pose des panneaux rigides et plaques soubassement",
-          "duree_jours": 1,
-          "effectif": 2,
-          "unite": "ml",
-          "quantite_defaut": 25,
-          "prix_moyen_ttc": 44.00,
-          "materiel": "Panneaux, clips, visseuse, cale de pose",
-          "apres": ["scellement-poteaux"]
-        },
+          "id": "rinçage-nettoyage",
+          "nom": "Nettoyage haute pression contrôlé et rinçage",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "m²",
+          "quantite_defaut": 40,
+          "prix_moyen_ttc": 6.50,
+          "materiel": "Nettoyeur haute pression, rotabuse / laveur de sol",
+          "apres": ["traitement-mousse"]
+        }
+      ]
+    },
+    {
+      "id": "entretien-arrosage-saisonnier",
+      "categorie": "Entretien",
+      "nom": "Entretien — Mise en route ou hivernage de l’arrosage automatique",
+      "taches": [
         {
-          "id": "finition-cloture",
-          "nom": "Réglages, nettoyage et réception",
+          "id": "controle-reseau",
+          "nom": "Vérification électrovannes, programmateur, goutteurs et tuyères",
           "duree_jours": 0.5,
           "effectif": 1,
           "unite": "forfait",
           "quantite_defaut": 1,
-          "prix_moyen_ttc": 120.00,
-          "materiel": "Clés, balai, évacuation gravats",
-          "apres": ["pose-panneaux"]
+          "prix_moyen_ttc": 130.00,
+          "materiel": "Tournevis, multimètre, buses/goutteurs de rechange",
+          "apres": []
+        },
+        {
+          "id": "purge-reglage",
+          "nom": "Purge à l’air comprimé (hivernage) ou réglage des secteurs (printemps)",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 110.00,
+          "materiel": "Compresseur, clé de réglage, raccords",
+          "apres": ["controle-reseau"]
         }
       ]
     },
     {
-      "id": "terrasse-bois",
-      "nom": "Création d’une terrasse bois sur plots",
+      "id": "entretien-remise-en-etat-terrain",
+      "categorie": "Entretien",
+      "nom": "Entretien — Remise en état / débroussaillage de terrain enfriché",
       "taches": [
         {
-          "id": "implantation-terrasse",
+          "id": "debroussaillage-coupe",
+          "nom": "Débroussaillage des broussailles, ronces et jeunes rejets",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 200,
+          "prix_moyen_ttc": 3.50,
+          "materiel": "Débroussailleuse (fil ou couteau/disque), visière, EPI",
+          "apres": []
+        },
+        {
+          "id": "evacuation-encombrants",
+          "nom": "Ramassage, broyage ou évacuation des déchets verts",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 240.00,
+          "materiel": "Broyeur ou remorque, fourche, râteau",
+          "apres": ["debroussaillage-coupe"]
+        }
+      ]
+    },
+    {
+      "id": "maconnerie-terrasse-bois-plots",
+      "categorie": "Maçonnerie & Terrasses",
+      "nom": "Terrasse — Création d’une terrasse bois sur plots réglables",
+      "taches": [
+        {
+          "id": "implantation-terrasse-bois",
           "nom": "Implantation, niveaux et préparation du fond",
           "duree_jours": 0.5,
           "effectif": 2,
@@ -282,7 +307,7 @@
           "apres": []
         },
         {
-          "id": "geotextile-plots",
+          "id": "geotextile-plots-lambourdes",
           "nom": "Pose géotextile, plots réglables et lambourdes",
           "duree_jours": 1,
           "effectif": 2,
@@ -290,21 +315,21 @@
           "quantite_defaut": 20,
           "prix_moyen_ttc": 38.00,
           "materiel": "Géotextile, plots, lambourdes, niveau, scie",
-          "apres": ["implantation-terrasse"]
+          "apres": ["implantation-terrasse-bois"]
         },
         {
-          "id": "platelage-bois",
-          "nom": "Pose et vissage des lames de terrasse",
+          "id": "platelage-bois-pose",
+          "nom": "Pose et vissage des lames de terrasse bois",
           "duree_jours": 1.5,
           "effectif": 2,
           "unite": "m²",
           "quantite_defaut": 20,
           "prix_moyen_ttc": 65.00,
           "materiel": "Lames bois, vis inox, espaceurs, scie circulaire",
-          "apres": ["geotextile-plots"]
+          "apres": ["geotextile-plots-lambourdes"]
         },
         {
-          "id": "finition-terrasse",
+          "id": "finition-terrasse-bois",
           "nom": "Plinthes de finition, découpes et nettoyage",
           "duree_jours": 0.5,
           "effectif": 1,
@@ -312,7 +337,417 @@
           "quantite_defaut": 1,
           "prix_moyen_ttc": 160.00,
           "materiel": "Ponceuse, scie sauteuse, balai",
-          "apres": ["platelage-bois"]
+          "apres": ["platelage-bois-pose"]
+        }
+      ]
+    },
+    {
+      "id": "maconnerie-terrasse-dalles-sur-plots",
+      "categorie": "Maçonnerie & Terrasses",
+      "nom": "Terrasse — Pose de dalles céramique / grès cérame sur plots",
+      "taches": [
+        {
+          "id": "preparation-support-dalles",
+          "nom": "Traçage, pentes d’écoulement et préparation du support",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 14.00,
+          "materiel": "Niveau laser, règle, cordeau, piquets",
+          "apres": []
+        },
+        {
+          "id": "pose-dalles-plots",
+          "nom": "Pose des plots et des dalles épaisseur 20 mm",
+          "duree_jours": 1.5,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 78.00,
+          "materiel": "Plots dalles, ventouse, disqueuse diamant, niveau",
+          "apres": ["preparation-support-dalles"]
+        },
+        {
+          "id": "finitions-terrasse-dalles",
+          "nom": "Coupes périphériques, calages et nettoyage",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 150.00,
+          "materiel": "Carrelette / disqueuse, balai, éponge",
+          "apres": ["pose-dalles-plots"]
+        }
+      ]
+    },
+    {
+      "id": "maconnerie-terrasse-dalles-sur-lit-sable",
+      "categorie": "Maçonnerie & Terrasses",
+      "nom": "Terrasse / Dallage — Pose de pavés ou dalles sur lit de sable / gravillon",
+      "taches": [
+        {
+          "id": "decaissement-fond-forme",
+          "nom": "Décaissement, géotextile et mise en œuvre du fond de forme",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 24.00,
+          "materiel": "Mini-pelle ou pelle, plaque vibrante, géotextile",
+          "apres": []
+        },
+        {
+          "id": "pose-paves-joints",
+          "nom": "Tirage du lit de pose, pose des pavés/dalles et remplissage des joints",
+          "duree_jours": 1.5,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 68.00,
+          "materiel": "Règle, maillet caoutchouc, balai, sable polymère/gravillon",
+          "apres": ["decaissement-fond-forme"]
+        }
+      ]
+    },
+    {
+      "id": "maconnerie-allee-graviers-alveoles",
+      "categorie": "Maçonnerie & Terrasses",
+      "nom": "Circulation — Création d’allée carrossable ou piétonne en graviers sur alvéoles",
+      "taches": [
+        {
+          "id": "terrassement-allee",
+          "nom": "Traçage, décaissement et pose du géotextile",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 50,
+          "prix_moyen_ttc": 18.00,
+          "materiel": "Cordeau, piquets, mini-pelle/brouette, géotextile",
+          "apres": []
+        },
+        {
+          "id": "pose-alveoles-gravier",
+          "nom": "Pose des plaques alvéolaires, remplissage gravier et compactage",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 50,
+          "prix_moyen_ttc": 34.00,
+          "materiel": "Dalles alvéolaires, graviers, râteau, plaque vibrante",
+          "apres": ["terrassement-allee"]
+        }
+      ]
+    },
+    {
+      "id": "maconnerie-pose-bordures",
+      "categorie": "Maçonnerie & Terrasses",
+      "nom": "Maçonnerie — Pose de bordures (béton, acier Corten, bois ou pierre)",
+      "taches": [
+        {
+          "id": "tranchee-bordures",
+          "nom": "Alignement, piquetage et ouverture de la tranchée",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 30,
+          "prix_moyen_ttc": 11.00,
+          "materiel": "Cordeau, piquets, bêche, pioche",
+          "apres": []
+        },
+        {
+          "id": "scellement-ou-fixation-bordures",
+          "nom": "Scellement au béton ou fixation des bordures et finition",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 30,
+          "prix_moyen_ttc": 26.00,
+          "materiel": "Bétonnière, truelle, niveau, maillet, bordures",
+          "apres": ["tranchee-bordures"]
+        }
+      ]
+    },
+    {
+      "id": "maconnerie-muret-soutènement",
+      "categorie": "Maçonnerie & Terrasses",
+      "nom": "Maçonnerie — Construction d’un muret (agglos, pierre ou soutènement)",
+      "taches": [
+        {
+          "id": "fondations-muret",
+          "nom": "Fouilles, ferraillage et coulage des fondations",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 10,
+          "prix_moyen_ttc": 55.00,
+          "materiel": "Pelle, bétonnière, fers à béton, règle, niveau",
+          "apres": []
+        },
+        {
+          "id": "elevation-muret",
+          "nom": "Montage du muret, drainage arrière et enduit / couronnement",
+          "duree_jours": 1.5,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 10,
+          "prix_moyen_ttc": 95.00,
+          "materiel": "Agglos/pierres, mortier, truelle, fil à plomb, drain",
+          "apres": ["fondations-muret"]
+        }
+      ]
+    },
+    {
+      "id": "maconnerie-marches-escalier-exterieur",
+      "categorie": "Maçonnerie & Terrasses",
+      "nom": "Maçonnerie — Création de marches ou d’un escalier extérieur paysager",
+      "taches": [
+        {
+          "id": "terrassement-escalier",
+          "nom": "Implantation, terrassement et assise des marches",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 260.00,
+          "materiel": "Niveau, cordeau, pelle, bétonnière",
+          "apres": []
+        },
+        {
+          "id": "pose-marches-finition",
+          "nom": "Pose des marches (pierre, bois ou béton) et sécurisation",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 680.00,
+          "materiel": "Marches, mortier/visserie, niveau, disqueuse",
+          "apres": ["terrassement-escalier"]
+        }
+      ]
+    },
+    {
+      "id": "cloture-rigide-scellement",
+      "categorie": "Clôtures",
+      "nom": "Clôture — Pose de clôture rigide (panneaux soudés scellés)",
+      "taches": [
+        {
+          "id": "piquetage-cloture-rigide",
+          "nom": "Piquetage, alignement et repérage des réseaux",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 180.00,
+          "materiel": "Cordeau, piquets, niveau laser, détecteur",
+          "apres": []
+        },
+        {
+          "id": "scellement-poteaux-rigides",
+          "nom": "Forage et scellement des poteaux au béton",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 32.00,
+          "materiel": "Tarière, bétonnière, niveau, pelles",
+          "apres": ["piquetage-cloture-rigide"]
+        },
+        {
+          "id": "pose-panneaux-rigides",
+          "nom": "Pose des panneaux rigides, plaques de soubassement et clips",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 44.00,
+          "materiel": "Panneaux rigides, clips, visseuse, cale de pose",
+          "apres": ["scellement-poteaux-rigides"]
+        },
+        {
+          "id": "finition-cloture-rigide",
+          "nom": "Réglages, nettoyage et réception du chantier",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 120.00,
+          "materiel": "Clés, balai, évacuation gravats",
+          "apres": ["pose-panneaux-rigides"]
+        }
+      ]
+    },
+    {
+      "id": "cloture-rigide-sur-platines",
+      "categorie": "Clôtures",
+      "nom": "Clôture — Pose de clôture rigide sur platines (sur muret existant)",
+      "taches": [
+        {
+          "id": "tracage-percage-platines",
+          "nom": "Traçage, contrôle du muret et perçage des platines",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 16.00,
+          "materiel": "Perforateur, forets béton, niveau, cordeau",
+          "apres": []
+        },
+        {
+          "id": "fixation-poteaux-panneaux-platines",
+          "nom": "Chevillage chimique/mécanique des poteaux et pose des panneaux",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 46.00,
+          "materiel": "Clé à choc, scellement chimique, panneaux, clips",
+          "apres": ["tracage-percage-platines"]
+        }
+      ]
+    },
+    {
+      "id": "cloture-occultation-lames",
+      "categorie": "Clôtures",
+      "nom": "Clôture — Pose de clôture occultante (lames composite, bois ou PVC)",
+      "taches": [
+        {
+          "id": "scellement-poteaux-rainures",
+          "nom": "Implantation et scellement des poteaux à rainures",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 38.00,
+          "materiel": "Tarière, bétonnière, niveau à bulle, cordeau",
+          "apres": []
+        },
+        {
+          "id": "glissement-lames-chapeaux",
+          "nom": "Insertion des lames d’occultation, pose des chapeaux et finitions",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 58.00,
+          "materiel": "Lames occultantes, chapeaux, scie, niveau",
+          "apres": ["scellement-poteaux-rainures"]
+        }
+      ]
+    },
+    {
+      "id": "cloture-grillage-souple",
+      "categorie": "Clôtures",
+      "nom": "Clôture — Pose de grillage souple avec piquets et fils de tension",
+      "taches": [
+        {
+          "id": "pose-piquets-jambe-force",
+          "nom": "Implantation, scellement des piquets et jambes de force",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 30,
+          "prix_moyen_ttc": 18.00,
+          "materiel": "Piquets, jambes de force, bétonnière, massette",
+          "apres": []
+        },
+        {
+          "id": "deroulage-tension-grillage",
+          "nom": "Pose des fils de tension, tendeurs et déroulement du grillage",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 30,
+          "prix_moyen_ttc": 16.00,
+          "materiel": "Grillage souple, fil de tension, pince à grillage, tendeurs",
+          "apres": ["pose-piquets-jambe-force"]
+        }
+      ]
+    },
+    {
+      "id": "cloture-ganivelle-chataignier",
+      "categorie": "Clôtures",
+      "nom": "Clôture — Pose de ganivelle / clôture bois en châtaignier",
+      "taches": [
+        {
+          "id": "enfoncement-piquets-bois",
+          "nom": "Alignement et enfoncement des piquets en châtaignier",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 15.00,
+          "materiel": "Piquets châtaignier, masse/enfonce-pieux, cordeau",
+          "apres": []
+        },
+        {
+          "id": "pose-rouleaux-ganivelle",
+          "nom": "Déroulement, tension et ligature de la ganivelle",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 22.00,
+          "materiel": "Rouleaux ganivelle, fil d’attache, pince coupante",
+          "apres": ["enfoncement-piquets-bois"]
+        }
+      ]
+    },
+    {
+      "id": "cloture-brise-vue-sur-cloture",
+      "categorie": "Clôtures",
+      "nom": "Clôture — Pose de brise-vue / canisse / lamelles sur grillage existant",
+      "taches": [
+        {
+          "id": "verification-support-cloture",
+          "nom": "Contrôle de la solidité de la clôture existante et mesures",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 75.00,
+          "materiel": "Mètre, pinces, EPI",
+          "apres": []
+        },
+        {
+          "id": "pose-occultation-existante",
+          "nom": "Pose et fixation du brise-vue / canisse / lattes",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 14.00,
+          "materiel": "Brise-vue / canisse, liens/agrafes, ciseaux",
+          "apres": ["verification-support-cloture"]
+        }
+      ]
+    },
+    {
+      "id": "cloture-portillon-portail",
+      "categorie": "Clôtures",
+      "nom": "Clôture — Pose d’un portillon ou portail battant / coulissant",
+      "taches": [
+        {
+          "id": "seuil-piliers-portail",
+          "nom": "Implantation, seuil / rail ou scellement des piliers",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 420.00,
+          "materiel": "Niveau laser, bétonnière, pelle, règle",
+          "apres": []
+        },
+        {
+          "id": "pose-vantaux-reglages",
+          "nom": "Pose des vantaux, gonds/chariots, serrure et réglages",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 280.00,
+          "materiel": "Clés, niveau, visseuse, quincaillerie",
+          "apres": ["seuil-piliers-portail"]
         }
       ]
     }
