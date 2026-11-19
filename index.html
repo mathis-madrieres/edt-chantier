@@ -43,7 +43,7 @@
     header h1 { margin: 0 0 0.3rem; font-size: 1.7rem; }
     header p { margin: 0; opacity: 0.92; font-size: 0.95rem; }
 
-    main { max-width: 1160px; margin: 1.5rem auto; padding: 0 1rem 3rem; }
+    main { max-width: 1180px; margin: 1.5rem auto; padding: 0 1rem 3rem; }
 
     section {
       background: var(--blanc);
@@ -94,6 +94,7 @@
       font-weight: 600;
       cursor: pointer;
       font-size: 0.9rem;
+      transition: opacity 0.15s;
     }
     button:hover { opacity: 0.9; }
     button.sec { background: #4b5563; }
@@ -137,7 +138,7 @@
       justify-content: space-between;
       margin-bottom: 0.7rem;
     }
-    .lot-header input { max-width: 440px; font-weight: 700; font-size: 1rem; }
+    .lot-header input { max-width: 460px; font-weight: 700; font-size: 1rem; }
 
     .tags-contraintes { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 0.8rem; }
     .tag {
@@ -164,6 +165,7 @@
     th, td { border: 1px solid var(--gris-bordure); padding: 0.45rem 0.55rem; text-align: left; }
     th { background: var(--vert-clair); color: var(--vert-fonce); }
     td input, td select { padding: 0.35rem; font-size: 0.85rem; }
+    .num-cell { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
     .kpi-bar {
       display: grid;
@@ -187,6 +189,17 @@
       margin-top: 0.4rem;
     }
 
+    .box-materiel {
+      margin-top: 1rem;
+      background: #f8faf8;
+      border: 1px solid var(--gris-bordure);
+      border-left: 4px solid var(--vert-moyen);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      font-size: 0.88rem;
+    }
+    .box-materiel h3 { margin: 0 0 0.4rem; font-size: 0.95rem; color: var(--vert-fonce); }
+
     .devis-item {
       display: flex;
       flex-wrap: wrap;
@@ -209,7 +222,7 @@
         display: block !important;
         padding: 10mm;
         color: #000;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
       }
       .pdf-head {
         display: flex;
@@ -223,9 +236,9 @@
       .pdf-boxes { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
       .pdf-box { border: 1px solid #bbb; padding: 10px; width: 48%; border-radius: 4px; }
       .pdf-objet { background: #f4f6f5; border-left: 4px solid #1e4620; padding: 8px 10px; margin-bottom: 12px; }
-      .pdf-lot-row td { background: #e9f3ea !important; font-weight: bold; -webkit-print-color-adjust: exact; }
+      .pdf-lot-row td { background: #e9f3ea !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .pdf-footer-grid { display: flex; justify-content: space-between; gap: 20px; margin-top: 14px; align-items: flex-start; }
-      .pdf-conditions { width: 50%; font-size: 0.86rem; }
+      .pdf-conditions { width: 50%; font-size: 0.84rem; }
       .pdf-totaux { width: 46%; margin-left: auto; }
       .pdf-sign {
         margin-top: 22px;
@@ -345,9 +358,9 @@
     <h2>3. Chantiers (Lots) & Chiffrage du devis</h2>
     <div style="display:flex; flex-wrap:wrap; gap:0.7rem; margin-bottom:1rem;">
       <button type="button" onclick="ajouterChantier()">+ Ajouter un chantier / lot</button>
-      <select id="selectModeleChantier" style="max-width:340px;"></select>
+      <select id="selectModeleChantier" style="max-width:360px;"></select>
       <button type="button" class="outline" onclick="ajouterChantierDepuisModele()">Insérer ce chantier type</button>
-      <button type="button" class="sec" onclick="importerChantiersJSON()">📥 Charger modèles (chantiers.json)</button>
+      <button type="button" class="sec" onclick="importerChantiersJSON(false)">📥 Charger modèles (chantiers.json)</button>
       <select id="selectVarianteGlobale" style="max-width:340px;"></select>
       <button type="button" class="outline" onclick="appliquerVarianteGlobale()">Appliquer remise / forfait global</button>
     </div>
@@ -405,17 +418,24 @@
         <tr><td colspan="6">Choisissez une date de début puis cliquez sur « Calculer le planning ».</td></tr>
       </tbody>
     </table>
+
+    <div id="ficheMateriel" class="box-materiel" style="display:none;"></div>
   </section>
 
   <!-- 5. DEVIS, FACTURATION & RÉPERTOIRE CLIENTS -->
   <section>
     <h2>5. Devis, Facturation & Répertoire clients</h2>
-    <p style="font-size:0.88rem; margin-top:0;">Enregistrez vos devis dans votre navigateur pour retrouver vos clients, ou générez un devis imprimable au format PDF.</p>
+    <p style="font-size:0.88rem; margin-top:0;">Enregistrez vos devis dans votre navigateur pour retrouver vos clients, générez un PDF ou exportez une sauvegarde complète.</p>
 
     <div style="display:flex; flex-wrap:wrap; gap:0.7rem; margin-bottom:1rem;">
       <button type="button" onclick="sauvegarderDevis()">💾 Enregistrer le devis</button>
       <button type="button" class="sec" onclick="nouveauDevisVierges()">📄 Nouveau devis</button>
       <button type="button" class="outline" onclick="imprimerPDF()">🖨️ Générer / Imprimer le PDF</button>
+      <button type="button" class="outline" onclick="exporterSauvegardeComplete()">⬇️ Sauvegarder la base (.json)</button>
+      <label class="outline" style="display:inline-flex; align-items:center; padding:0.55rem 1rem; border-radius:6px; cursor:pointer; margin:0; font-size:0.9rem;">
+        ⬆️ Restaurer (.json)
+        <input type="file" accept=".json" onchange="importerSauvegardeComplete(event)" style="display:none;">
+      </label>
     </div>
 
     <div style="background: var(--vert-clair); padding: 0.9rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -446,66 +466,43 @@ const CATALOGUE_DEFAUT = [
 
 const MODELES_CHANTIERS_PAYSAGERS = [
   {
+    categorie: "Création & Plantation",
     titre: "Terrassement, préparation du sol & fosses de plantation",
     contraintes: [],
     taches: [
-      { designation: "Piquetage, traçage et préparation d'emprise", qte: 1, unite: "forfait", pu: 120, tva: 20, jours: 0.5 },
-      { designation: "Décaissement / terrassement léger et évacuation", qte: 25, unite: "m³", pu: 42, tva: 20, jours: 1.5 },
-      { designation: "Apport terre végétale et amendement organique", qte: 12, unite: "m³", pu: 55, tva: 20, jours: 1.0 },
-      { designation: "Creusement fosses de plantation (ex. 12 m³ / arbres)", qte: 12, unite: "m³", pu: 38, tva: 20, jours: 1.0 }
+      { designation: "Piquetage, traçage et préparation d'emprise", qte: 1, unite: "forfait", pu: 120, tva: 20, jours: 0.5, materiel: "Piquets, cordeau, niveau" },
+      { designation: "Décaissement / terrassement léger et évacuation", qte: 25, unite: "m³", pu: 42, tva: 20, jours: 1.5, materiel: "Mini-pelle, remorque" },
+      { designation: "Apport terre végétale et amendement organique", qte: 12, unite: "m³", pu: 55, tva: 20, jours: 1.0, materiel: "Brouette, râteau, pelle" },
+      { designation: "Creusement fosses de plantation (ex. 12 m³ / arbres)", qte: 12, unite: "m³", pu: 38, tva: 20, jours: 1.0, materiel: "Bêche, pioche, tuteurs" }
     ]
   },
   {
+    categorie: "Création & Plantation",
     titre: "Massifs arbustifs, vivaces & paillage (pouzzolane / BRF)",
     contraintes: [],
     taches: [
-      { designation: "Pose feutre géotextile de paillage", qte: 50, unite: "m²", pu: 4.5, tva: 20, jours: 0.5 },
-      { designation: "Fourniture et plantation arbustes et vivaces", qte: 35, unite: "u", pu: 28, tva: 10, jours: 1.5 },
-      { designation: "Paillage minéral (pouzzolane) ou organique (BRF)", qte: 50, unite: "m²", pu: 14, tva: 10, jours: 0.5 }
+      { designation: "Pose feutre géotextile de paillage", qte: 50, unite: "m²", pu: 4.5, tva: 20, jours: 0.5, materiel: "Agrafes, cutter, géotextile" },
+      { designation: "Fourniture et plantation arbustes et vivaces", qte: 35, unite: "u", pu: 28, tva: 10, jours: 1.5, materiel: "Transplantoir, arrosoir, sécateur" },
+      { designation: "Paillage minéral (pouzzolane) ou organique (BRF)", qte: 50, unite: "m²", pu: 14, tva: 10, jours: 0.5, materiel: "Brouette, griffe" }
     ]
   },
   {
+    categorie: "Création & Plantation",
     titre: "Gazon de placage / Semis & Engazonnement",
     contraintes: [],
     taches: [
-      { designation: "Nivellement fin, roulage et préparation lit de semence", qte: 120, unite: "m²", pu: 5, tva: 20, jours: 1.0 },
-      { designation: "Semis gazon rustique / méditerranéen + engrais", qte: 120, unite: "m²", pu: 4.5, tva: 10, jours: 0.5 },
-      { designation: "Pose gazon de placage en rouleaux", qte: 80, unite: "m²", pu: 18, tva: 10, jours: 1.0 }
+      { designation: "Nivellement fin, roulage et préparation lit de semence", qte: 120, unite: "m²", pu: 5, tva: 20, jours: 1.0, materiel: "Motoculteur, râteau, rouleau à gazon" },
+      { designation: "Semis gazon rustique / méditerranéen + engrais", qte: 120, unite: "m²", pu: 4.5, tva: 10, jours: 0.5, materiel: "Semoir, rouleau" },
+      { designation: "Pose gazon de placage en rouleaux", qte: 80, unite: "m²", pu: 18, tva: 10, jours: 1.0, materiel: "Couteau à gazon, rouleau" }
     ]
   },
   {
-    titre: "Clôtures, ganivelles châtaignier & garde-corps",
-    contraintes: [],
-    taches: [
-      { designation: "Implantation et scellement piquets / supports", qte: 25, unite: "ml", pu: 24, tva: 20, jours: 1.0 },
-      { designation: "Pose clôture rigide / ganivelle châtaignier", qte: 25, unite: "ml", pu: 36, tva: 20, jours: 1.0 },
-      { designation: "Pose garde-corps métallique / sécurisation bordure", qte: 10, unite: "ml", pu: 95, tva: 20, jours: 1.0 }
-    ]
-  },
-  {
-    titre: "Allées, circulations, gravier & pas japonais",
-    contraintes: [],
-    taches: [
-      { designation: "Pose bordures de séparation (bois, acier ou béton)", qte: 30, unite: "ml", pu: 22, tva: 20, jours: 1.0 },
-      { designation: "Mise en œuvre fond de forme et géotextile", qte: 45, unite: "m²", pu: 16, tva: 20, jours: 1.0 },
-      { designation: "Épandage gravier décoratif / stabilisateur", qte: 45, unite: "m²", pu: 19, tva: 20, jours: 0.75 }
-    ]
-  },
-  {
+    categorie: "Arrosage",
     titre: "Arrosage intégré (goutte-à-goutte & aspersion)",
     contraintes: [],
     taches: [
-      { designation: "Tranchée et pose canalisation PE + programmateur", qte: 35, unite: "ml", pu: 18, tva: 20, jours: 1.0 },
-      { designation: "Pose rampe goutte-à-goutte / tuyères et réglages", qte: 1, unite: "forfait", pu: 290, tva: 20, jours: 0.75 }
-    ]
-  },
-  {
-    titre: "Entretien, taille de haies, tonte & remise en état",
-    contraintes: [],
-    taches: [
-      { designation: "Taille de haies / arbustes et mise en forme", qte: 30, unite: "ml", pu: 11, tva: 20, jours: 1.0 },
-      { designation: "Débroussaillage, tonte et nettoyage complet du site", qte: 150, unite: "m²", pu: 3.5, tva: 20, jours: 0.75 },
-      { designation: "Évacuation des rémanents et déchets verts", qte: 1, unite: "forfait", pu: 140, tva: 20, jours: 0.5 }
+      { designation: "Tranchée et pose canalisation PE + programmateur", qte: 35, unite: "ml", pu: 18, tva: 20, jours: 1.0, materiel: "Trancheuse / bêche, coupe-tube" },
+      { designation: "Pose rampe goutte-à-goutte / tuyères et réglages", qte: 1, unite: "forfait", pu: 290, tva: 20, jours: 0.75, materiel: "Poinçon, raccords, clé de réglage" }
     ]
   }
 ];
@@ -529,8 +526,8 @@ let devisCourant = JSON.parse(localStorage.getItem(STORAGE_KEY_BROUILLON)) || {
       titre: "Chantier 1 : Terrassement & Massifs",
       contraintes: [],
       taches: [
-        { designation: "Préparation du sol et amendement", qte: 40, unite: "m²", pu: 12, tva: 20, jours: 1.0 },
-        { designation: "Fourniture et plantation arbustes", qte: 15, unite: "u", pu: 34, tva: 10, jours: 1.5 }
+        { designation: "Préparation du sol et amendement", qte: 40, unite: "m²", pu: 12, tva: 20, jours: 1.0, materiel: "Motoculteur, râteau" },
+        { designation: "Fourniture et plantation arbustes", qte: 15, unite: "u", pu: 34, tva: 10, jours: 1.5, materiel: "Bêche, brouette, tuteurs" }
       ]
     }
   ],
@@ -538,6 +535,19 @@ let devisCourant = JSON.parse(localStorage.getItem(STORAGE_KEY_BROUILLON)) || {
 };
 
 let planningCalcule = [];
+let jsonDejaCharge = false;
+
+function formatEuro(val) {
+  return (Number(val) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+}
+
+function escapeHtml(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 function majEtatConnexion() {
   document.body.classList.toggle("offline", !navigator.onLine);
@@ -545,6 +555,35 @@ function majEtatConnexion() {
 window.addEventListener("online", majEtatConnexion);
 window.addEventListener("offline", majEtatConnexion);
 majEtatConnexion();
+
+function synchroniserChampsVersObjet() {
+  devisCourant.numero = document.getElementById("numDevis").value.trim() || "DEV-2026-001";
+  devisCourant.date = document.getElementById("dateDevis").value;
+  devisCourant.entreprise = document.getElementById("infoEntreprise").value;
+  devisCourant.objet = document.getElementById("objetDevis").value;
+  devisCourant.effectif = parseInt(document.getElementById("effectifEquipe").value, 10) || 1;
+  devisCourant.dateDebutPlanning = document.getElementById("dateDebutPlanning").value;
+  devisCourant.client = {
+    nom: document.getElementById("clientNom").value.trim(),
+    tel: document.getElementById("clientTel").value.trim(),
+    email: document.getElementById("clientEmail").value.trim(),
+    adresse: document.getElementById("clientAdresse").value.trim()
+  };
+}
+
+function chargerObjetDansChamps() {
+  document.getElementById("numDevis").value = devisCourant.numero || "";
+  document.getElementById("dateDevis").value = devisCourant.date || new Date().toISOString().split("T")[0];
+  document.getElementById("infoEntreprise").value = devisCourant.entreprise || "";
+  document.getElementById("objetDevis").value = devisCourant.objet || "";
+  document.getElementById("effectifEquipe").value = devisCourant.effectif || 3;
+  document.getElementById("dateDebutPlanning").value = devisCourant.dateDebutPlanning || new Date().toISOString().split("T")[0];
+  document.getElementById("clientNom").value = devisCourant.client?.nom || "";
+  document.getElementById("clientTel").value = devisCourant.client?.tel || "";
+  document.getElementById("clientEmail").value = devisCourant.client?.email || "";
+  document.getElementById("clientAdresse").value = devisCourant.client?.adresse || "";
+  afficherApercuLogo();
+}
 
 function autoSave() {
   synchroniserChampsVersObjet();
@@ -579,32 +618,74 @@ function afficherApercuLogo() {
   }
 }
 
-async function importerChantiersJSON() {
+/* --- CHARGEMENT & CONVERSION DE CHANTIERS.JSON --- */
+async function importerChantiersJSON(silencieux = false) {
+  if (jsonDejaCharge && silencieux) return;
   try {
     const resp = await fetch("./chantiers.json", { cache: "no-store" });
     if (!resp.ok) throw new Error("Fichier chantiers.json introuvable");
     const data = await resp.json();
     if (Array.isArray(data.chantiers) && data.chantiers.length > 0) {
-      devisCourant.chantiers = data.chantiers;
-      afficherChantiers();
-      autoSave();
-      alert("Modèles chargés depuis chantiers.json !");
-    } else {
+      const convertis = data.chantiers.map(c => ({
+        categorie: c.categorie || "Catalogue JSON",
+        titre: c.nom || c.titre || "Chantier sans nom",
+        contraintes: [],
+        taches: (c.taches || []).map(t => ({
+          designation: t.nom || t.designation || "",
+          qte: t.quantite_defaut ?? t.qte ?? 1,
+          unite: t.unite || "forfait",
+          pu: t.prix_moyen_ttc ? +(t.prix_moyen_ttc / 1.2).toFixed(2) : (t.pu || 0),
+          tva: t.tva || 20,
+          jours: +((t.duree_jours ?? t.jours ?? 0.5) * (t.effectif || 1)).toFixed(2),
+          materiel: t.materiel || ""
+        }))
+      }));
+
+      // Évite les doublons si on reclique sur le bouton
+      const titresExistants = new Set(MODELES_CHANTIERS_PAYSAGERS.map(m => m.titre));
+      let ajoutes = 0;
+      convertis.forEach(item => {
+        if (!titresExistants.has(item.titre)) {
+          MODELES_CHANTIERS_PAYSAGERS.push(item);
+          ajoutes++;
+        }
+      });
+      jsonDejaCharge = true;
+      remplirSelectModelesChantiers();
+      if (!silencieux) {
+        alert(`${ajoutes} modèles chargés depuis chantiers.json dans le menu déroulant !`);
+      }
+    } else if (!silencieux) {
       alert("Le fichier chantiers.json ne contient pas de liste 'chantiers'.");
     }
   } catch (e) {
-    alert("Impossible de charger chantiers.json (" + e.message + ").");
+    if (!silencieux) {
+      alert("Impossible de charger chantiers.json (" + e.message + ").");
+    }
   }
 }
 
-/* --- MODÈLES DE CHANTIERS --- */
+/* --- MODÈLES DE CHANTIERS GROUPÉS PAR CATÉGORIE --- */
 function remplirSelectModelesChantiers() {
   const sel = document.getElementById("selectModeleChantier");
   if (!sel) return;
-  sel.innerHTML = `<option value="">-- Charger un chantier type --</option>` +
-    MODELES_CHANTIERS_PAYSAGERS.map((m, idx) =>
-      `<option value="${idx}">${m.titre}</option>`
-    ).join("");
+
+  const groupes = {};
+  MODELES_CHANTIERS_PAYSAGERS.forEach((m, idx) => {
+    const cat = m.categorie || "Autres chantiers";
+    if (!groupes[cat]) groupes[cat] = [];
+    groupes[cat].push({ idx, titre: m.titre });
+  });
+
+  let html = `<option value="">-- Charger un chantier type (${MODELES_CHANTIERS_PAYSAGERS.length} dispos) --</option>`;
+  Object.keys(groupes).forEach(cat => {
+    html += `<optgroup label="${escapeHtml(cat)}">`;
+    groupes[cat].forEach(item => {
+      html += `<option value="${item.idx}">${escapeHtml(item.titre)}</option>`;
+    });
+    html += `</optgroup>`;
+  });
+  sel.innerHTML = html;
 }
 
 function ajouterChantierDepuisModele() {
@@ -655,7 +736,7 @@ function afficherCatalogue() {
     const signe = item.valeur > 0 ? "+" : "";
     const classe = item.valeur < 0 ? "tag remise" : "tag";
     return `<span class="${classe}">
-      ${item.libelle} (<strong>${signe}${item.valeur}${suffixe}</strong>)
+      ${escapeHtml(item.libelle)} (<strong>${signe}${item.valeur}${suffixe}</strong>)
       <button type="button" onclick="supprimerDuCatalogue('${item.id}')" title="Supprimer">×</button>
     </span>`;
   }).join("");
@@ -664,7 +745,7 @@ function afficherCatalogue() {
   selectGlobal.innerHTML = `<option value="">-- Choisir une remise ou un forfait global --</option>` +
     globaux.map(g => {
       const unit = g.type === "forfait" ? "€ HT" : "%";
-      return `<option value="${g.id}">${g.libelle} (${g.valeur > 0 ? "+" : ""}${g.valeur}${unit})</option>`;
+      return `<option value="${g.id}">${escapeHtml(g.libelle)} (${g.valeur > 0 ? "+" : ""}${g.valeur}${unit})</option>`;
     }).join("");
 }
 
@@ -675,7 +756,7 @@ function ajouterChantier() {
     id: "lot-" + Date.now(),
     titre: `Chantier ${num} : Nouvelle zone`,
     contraintes: [],
-    taches: [{ designation: "Nouvelle prestation", qte: 1, unite: "forfait", pu: 100, tva: 20, jours: 0.5 }]
+    taches: [{ designation: "Nouvelle prestation", qte: 1, unite: "forfait", pu: 100, tva: 20, jours: 0.5, materiel: "" }]
   });
   afficherChantiers();
   autoSave();
@@ -693,7 +774,7 @@ function supprimerChantier(lotIndex) {
 
 function ajouterTache(lotIndex) {
   devisCourant.chantiers[lotIndex].taches.push({
-    designation: "", qte: 1, unite: "u", pu: 0, tva: 20, jours: 0.5
+    designation: "", qte: 1, unite: "u", pu: 0, tva: 20, jours: 0.5, materiel: ""
   });
   afficherChantiers();
   autoSave();
@@ -707,7 +788,7 @@ function supprimerTache(lotIndex, tacheIndex) {
 
 function majTache(lotIndex, tacheIndex, champ, valeur) {
   const tache = devisCourant.chantiers[lotIndex].taches[tacheIndex];
-  tache[champ] = (champ === "designation" || champ === "unite") ? valeur : parseFloat(valeur) || 0;
+  tache[champ] = (champ === "designation" || champ === "unite" || champ === "materiel") ? valeur : (parseFloat(valeur) || 0);
   recalculerTout();
   autoSave();
 }
@@ -751,31 +832,33 @@ function afficherChantiers() {
   const contraintesDispo = catalogue.filter(c => c.type === "contrainte");
 
   conteneur.innerHTML = devisCourant.chantiers.map((lot, lotIdx) => {
+    if (!Array.isArray(lot.contraintes)) lot.contraintes = [];
     const optionsContraintes = contraintesDispo.map(c =>
-      `<option value="${c.id}">${c.libelle} (+${c.valeur}% temps/prix)</option>`
+      `<option value="${c.id}">${escapeHtml(c.libelle)} (+${c.valeur}% temps/prix)</option>`
     ).join("");
 
     const tagsHtml = lot.contraintes.map((c, cIdx) =>
-      `<span class="tag">⚠️ ${c.libelle} (+${c.valeur}%)
+      `<span class="tag">⚠️ ${escapeHtml(c.libelle)} (+${c.valeur}%)
         <button type="button" onclick="retirerContrainteDuLot(${lotIdx}, ${cIdx})">×</button>
       </span>`
     ).join("");
 
     const rowsHtml = lot.taches.map((t, tIdx) => `
       <tr>
-        <td><input type="text" value="${t.designation}" placeholder="Description tâche..." onchange="majTache(${lotIdx},${tIdx},'designation',this.value)"></td>
-        <td style="width:75px;"><input type="number" step="0.1" value="${t.qte}" onchange="majTache(${lotIdx},${tIdx},'qte',this.value)"></td>
-        <td style="width:85px;"><input type="text" value="${t.unite}" onchange="majTache(${lotIdx},${tIdx},'unite',this.value)"></td>
-        <td style="width:95px;"><input type="number" step="0.01" value="${t.pu}" onchange="majTache(${lotIdx},${tIdx},'pu',this.value)"></td>
-        <td style="width:82px;">
+        <td><input type="text" value="${escapeHtml(t.designation)}" placeholder="Description tâche..." oninput="majTache(${lotIdx},${tIdx},'designation',this.value)"></td>
+        <td style="width:75px;"><input type="number" step="0.1" value="${t.qte}" oninput="majTache(${lotIdx},${tIdx},'qte',this.value)"></td>
+        <td style="width:80px;"><input type="text" value="${escapeHtml(t.unite)}" oninput="majTache(${lotIdx},${tIdx},'unite',this.value)"></td>
+        <td style="width:92px;"><input type="number" step="0.01" value="${t.pu}" oninput="majTache(${lotIdx},${tIdx},'pu',this.value)"></td>
+        <td style="width:78px;">
           <select onchange="majTache(${lotIdx},${tIdx},'tva',this.value)">
             <option value="20" ${t.tva == 20 ? "selected" : ""}>20%</option>
             <option value="10" ${t.tva == 10 ? "selected" : ""}>10%</option>
             <option value="5.5" ${t.tva == 5.5 ? "selected" : ""}>5.5%</option>
           </select>
         </td>
-        <td style="width:85px;"><input type="number" step="0.25" value="${t.jours}" onchange="majTache(${lotIdx},${tIdx},'jours',this.value)"></td>
-        <td style="width:45px; text-align:center;">
+        <td style="width:82px;"><input type="number" step="0.25" value="${t.jours}" oninput="majTache(${lotIdx},${tIdx},'jours',this.value)"></td>
+        <td class="num-cell" style="width:95px;" id="ligne-ht-${lotIdx}-${tIdx}">0,00 €</td>
+        <td style="width:42px; text-align:center;">
           <button type="button" class="danger sm" onclick="supprimerTache(${lotIdx},${tIdx})">×</button>
         </td>
       </tr>
@@ -784,7 +867,7 @@ function afficherChantiers() {
     return `
       <div class="lot-card">
         <div class="lot-header">
-          <input type="text" value="${lot.titre}" onchange="devisCourant.chantiers[${lotIdx}].titre = this.value; recalculerTout(); autoSave();">
+          <input type="text" value="${escapeHtml(lot.titre)}" oninput="devisCourant.chantiers[${lotIdx}].titre = this.value; autoSave();">
           <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
             <select id="sel-contrainte-${lotIdx}" style="width:auto;">
               <option value="">+ Ajouter contrainte terrain...</option>
@@ -804,6 +887,7 @@ function afficherChantiers() {
               <th>PU HT (€)</th>
               <th>TVA</th>
               <th>Durée (j/h)</th>
+              <th style="text-align:right;">Total HT</th>
               <th></th>
             </tr>
           </thead>
@@ -817,11 +901,11 @@ function afficherChantiers() {
     `;
   }).join("");
 
-  document.getElementById("conteneurGlobaux").innerHTML = devisCourant.variantesGlobales.map((v, idx) => {
+  document.getElementById("conteneurGlobaux").innerHTML = (devisCourant.variantesGlobales || []).map((v, idx) => {
     const unit = v.type === "forfait" ? " € HT" : " %";
     const cls = v.valeur < 0 ? "tag remise" : "tag";
     return `<span class="${cls}">
-      ${v.libelle} (${v.valeur > 0 ? "+" : ""}${v.valeur}${unit})
+      ${escapeHtml(v.libelle)} (${v.valeur > 0 ? "+" : ""}${v.valeur}${unit})
       <button type="button" onclick="retirerVarianteGlobale(${idx})">×</button>
     </span>`;
   }).join("");
@@ -836,6 +920,287 @@ function calculerTotauxDevis() {
   let tvaParTaux = { 20: 0, 10: 0, 5.5: 0 };
   let detailsLots = [];
 
-  devisCourant.chantiers.forEach((lot) => {
-    const pctContrainte = lot.contraintes.reduce((acc, c) => acc + c.valeur, 0);
-    const coeff = 1 + pctContrainte
+  devisCourant.chantiers.forEach((lot, lotIdx) => {
+    const pctContrainte = (lot.contraintes || []).reduce((acc, c) => acc + c.valeur, 0);
+    const coeff = 1 + pctContrainte / 100;
+    let lotHT = 0;
+    let lotJours = 0;
+
+    lot.taches.forEach((t, tIdx) => {
+      const ligneHT = (t.qte || 0) * (t.pu || 0) * coeff;
+      const ligneJours = (t.jours || 0) * coeff;
+      const taux = t.tva || 20;
+
+      lotHT += ligneHT;
+      lotJours += ligneJours;
+      tvaParTaux[taux] = (tvaParTaux[taux] || 0) + ligneHT * (taux / 100);
+
+      const cell = document.getElementById(`ligne-ht-${lotIdx}-${tIdx}`);
+      if (cell) cell.textContent = formatEuro(ligneHT);
+    });
+
+    totalHTBrut += lotHT;
+    totalJours += lotJours;
+    detailsLots.push({ titre: lot.titre, ht: lotHT, jours: lotJours, coeff, contraintes: lot.contraintes || [] });
+
+    const elSousTotal = document.getElementById(`sous-total-lot-${lotIdx}`);
+    if (elSousTotal) {
+      elSousTotal.textContent = `Sous-total chantier : ${formatEuro(lotHT)} HT (${lotJours.toFixed(2)} j/h)`;
+    }
+  });
+
+  // Application des remises et forfaits globaux
+  let totalHTNet = totalHTBrut;
+  let ajustementsGlobaux = [];
+
+  (devisCourant.variantesGlobales || []).forEach(v => {
+    if (v.type === "remise_pct") {
+      const montant = totalHTBrut * (v.valeur / 100);
+      totalHTNet += montant;
+      ajustementsGlobaux.push({ libelle: v.libelle, montant });
+    } else if (v.type === "forfait") {
+      totalHTNet += v.valeur;
+      ajustementsGlobaux.push({ libelle: v.libelle, montant: v.valeur });
+    }
+  });
+
+  // Ajustement proportionnel de la TVA si remise/forfait global
+  const ratioNet = totalHTBrut > 0 ? Math.max(0, totalHTNet / totalHTBrut) : 1;
+  let totalTVA = 0;
+  Object.keys(tvaParTaux).forEach(taux => {
+    tvaParTaux[taux] *= ratioNet;
+    totalTVA += tvaParTaux[taux];
+  });
+  // Si totalHTBrut == 0 mais forfait global ajouté, TVA 20% par défaut sur le forfait
+  if (totalHTBrut === 0 && totalHTNet > 0) {
+    tvaParTaux[20] = totalHTNet * 0.20;
+    totalTVA = tvaParTaux[20];
+  }
+
+  const totalTTC = totalHTNet + totalTVA;
+  return { totalHTBrut, totalHTNet, totalTVA, totalTTC, totalJours, tvaParTaux, detailsLots, ajustementsGlobaux };
+}
+
+function recalculerTout() {
+  const res = calculerTotauxDevis();
+  document.getElementById("kpiCharge").textContent = res.totalJours.toFixed(2).replace(".", ",") + " j/h";
+  document.getElementById("kpiHT").textContent = formatEuro(res.totalHTNet);
+  document.getElementById("kpiTTC").textContent = formatEuro(res.totalTTC);
+}
+
+/* --- PLANNING PRÉVISIONNEL (EXCLUSION WEEK-ENDS + FICHE MATÉRIEL) --- */
+function genererPlanning() {
+  synchroniserChampsVersObjet();
+  const dateStr = devisCourant.dateDebutPlanning || new Date().toISOString().split("T")[0];
+  const effectif = Math.max(1, devisCourant.effectif || 1);
+
+  let curseur = new Date(dateStr + "T08:00:00");
+  // Si la date choisie tombe un week-end, avancer au lundi
+  while (curseur.getDay() === 0 || curseur.getDay() === 6) {
+    curseur.setDate(curseur.getDate() + 1);
+  }
+  let demiJournee = 0; // 0 = Matin, 1 = Après-midi
+
+  planningCalcule = [];
+  const materielsSet = new Set();
+
+  devisCourant.chantiers.forEach(lot => {
+    const pctContrainte = (lot.contraintes || []).reduce((acc, c) => acc + c.valeur, 0);
+    const coeff = 1 + pctContrainte / 100;
+
+    lot.taches.forEach(t => {
+      if (t.materiel) {
+        t.materiel.split(",").map(m => m.trim()).filter(Boolean).forEach(m => materielsSet.add(m));
+      }
+      const chargeJH = (t.jours || 0) * coeff;
+      if (chargeJH <= 0) return;
+
+      // Durée réelle en jours calendaires selon l'effectif disponible, arrondie à la demi-journée supérieure
+      const dureeReelleJours = chargeJH / effectif;
+      const nbDemiJournees = Math.max(1, Math.ceil(dureeReelleJours * 2));
+
+      for (let i = 0; i < nbDemiJournees; i++) {
+        planningCalcule.push({
+          dateISO: curseur.toISOString().split("T")[0],
+          dateLabel: curseur.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" }),
+          creneau: demiJournee === 0 ? "Matin (8h-12h)" : "Après-midi (13h30-17h30)",
+          estMatin: demiJournee === 0,
+          chantier: lot.titre,
+          tache: t.designation || "Tâche sans libellé",
+          duree: "0,5 j",
+          equipe: effectif + " pers."
+        });
+
+        demiJournee++;
+        if (demiJournee > 1) {
+          demiJournee = 0;
+          curseur.setDate(curseur.getDate() + 1);
+          while (curseur.getDay() === 0 || curseur.getDay() === 6) {
+            curseur.setDate(curseur.getDate() + 1);
+          }
+        }
+      }
+    });
+  });
+
+  const tbody = document.getElementById("tbodyPlanning");
+  const resume = document.getElementById("resumeDatesPlanning");
+  const ficheMat = document.getElementById("ficheMateriel");
+
+  if (planningCalcule.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6">Aucune tâche planifiable (vérifiez les durées en j/h).</td></tr>`;
+    resume.textContent = "";
+    ficheMat.style.display = "none";
+    return;
+  }
+
+  const debut = planningCalcule[0].dateLabel;
+  const fin = planningCalcule[planningCalcule.length - 1].dateLabel;
+  const nbJoursOuvres = (planningCalcule.length / 2).toFixed(1).replace(".", ",");
+  resume.textContent = `📅 Intervention prévue du ${debut} au ${fin} — soit ${nbJoursOuvres} jour(s) ouvré(s) pour une équipe de ${effectif} personne(s).`;
+
+  tbody.innerHTML = planningCalcule.map(p => `
+    <tr>
+      <td><strong>${p.dateLabel}</strong></td>
+      <td>${p.creneau}</td>
+      <td>${escapeHtml(p.chantier)}</td>
+      <td>${escapeHtml(p.tache)}</td>
+      <td>${p.duree}</td>
+      <td>${p.equipe}</td>
+    </tr>
+  `).join("");
+
+  if (materielsSet.size > 0) {
+    ficheMat.style.display = "block";
+    ficheMat.innerHTML = `<h3>🧰 Matériel & outillage à préparer pour le chantier</h3>
+      <div>${Array.from(materielsSet).map(m => `<span class="tag remise" style="margin:2px;">${escapeHtml(m)}</span>`).join(" ")}</div>`;
+  } else {
+    ficheMat.style.display = "none";
+  }
+}
+
+/* --- EXPORT CALENDRIER (.ICS) --- */
+function exporterICS() {
+  if (planningCalcule.length === 0) {
+    genererPlanning();
+    if (planningCalcule.length === 0) return;
+  }
+  const client = devisCourant.client?.nom || "Client";
+  const lieu = (devisCourant.client?.adresse || "").replace(/,/g, "\\,");
+
+  let ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Chantier Planner Paysager//FR"
+  ];
+
+  planningCalcule.forEach((p, idx) => {
+    const d = p.dateISO.replace(/-/g, "");
+    const hDebut = p.estMatin ? "080000" : "133000";
+    const hFin = p.estMatin ? "120000" : "173000";
+    ics.push(
+      "BEGIN:VEVENT",
+      `UID:chantier-${devisCourant.id}-${idx}@paysage`,
+      `DTSTAMP:${d}T070000Z`,
+      `DTSTART:${d}T${hDebut}`,
+      `DTEND:${d}T${hFin}`,
+      `SUMMARY:${p.chantier} - ${p.tache} (${client})`,
+      `LOCATION:${lieu}`,
+      `DESCRIPTION:Devis ${devisCourant.numero} - Équipe : ${p.equipe}`,
+      "END:VEVENT"
+    );
+  });
+
+  ics.push("END:VCALENDAR");
+  const blob = new Blob([ics.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `Planning_${devisCourant.numero || "chantier"}.ics`;
+  a.click();
+}
+
+/* --- RÉPERTOIRE & SAUVEGARDE --- */
+function sauvegarderDevis() {
+  synchroniserChampsVersObjet();
+  if (!devisCourant.client.nom) {
+    alert("Veuillez renseigner au moins le nom du client avant d'enregistrer.");
+    return;
+  }
+  const totaux = calculerTotauxDevis();
+  const copie = JSON.parse(JSON.stringify(devisCourant));
+  copie.totalTTC = totaux.totalTTC;
+  copie.updatedAt = new Date().toISOString();
+
+  const indexExistant = repertoireDevis.findIndex(d => d.id === copie.id);
+  if (indexExistant >= 0) {
+    repertoireDevis[indexExistant] = copie;
+  } else {
+    repertoireDevis.unshift(copie);
+  }
+  localStorage.setItem(STORAGE_KEY_DEVIS, JSON.stringify(repertoireDevis));
+  afficherRepertoire();
+  alert(`Devis ${copie.numero} enregistré dans le répertoire !`);
+}
+
+function chargerDevisDepuisRepertoire(id) {
+  const trouve = repertoireDevis.find(d => d.id === id);
+  if (!trouve) return;
+  devisCourant = JSON.parse(JSON.stringify(trouve));
+  chargerObjetDansChamps();
+  afficherChantiers();
+  autoSave();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function dupliquerDevis(id) {
+  const trouve = repertoireDevis.find(d => d.id === id);
+  if (!trouve) return;
+  const copie = JSON.parse(JSON.stringify(trouve));
+  copie.id = Date.now();
+  copie.numero = copie.numero + "-COPIE";
+  copie.date = new Date().toISOString().split("T")[0];
+  repertoireDevis.unshift(copie);
+  localStorage.setItem(STORAGE_KEY_DEVIS, JSON.stringify(repertoireDevis));
+  afficherRepertoire();
+}
+
+function supprimerDevisRepertoire(id) {
+  if (!confirm("Supprimer définitivement ce devis du répertoire ?")) return;
+  repertoireDevis = repertoireDevis.filter(d => d.id !== id);
+  localStorage.setItem(STORAGE_KEY_DEVIS, JSON.stringify(repertoireDevis));
+  afficherRepertoire();
+}
+
+function nouveauDevisVierges() {
+  if (!confirm("Créer un nouveau devis vierge ? (Pensez à enregistrer l'actuel si besoin)")) return;
+  const prochainNum = "DEV-" + new Date().getFullYear() + "-" + String(repertoireDevis.length + 1).padStart(3, "0");
+  devisCourant = {
+    id: Date.now(),
+    numero: prochainNum,
+    date: new Date().toISOString().split("T")[0],
+    entreprise: devisCourant.entreprise,
+    objet: "",
+    logo: devisCourant.logo,
+    effectif: devisCourant.effectif || 3,
+    dateDebutPlanning: new Date().toISOString().split("T")[0],
+    client: { nom: "", tel: "", email: "", adresse: "" },
+    chantiers: [
+      {
+        id: "lot-" + Date.now(),
+        titre: "Chantier 1 : Prestations paysagères",
+        contraintes: [],
+        taches: [{ designation: "", qte: 1, unite: "forfait", pu: 0, tva: 20, jours: 0.5, materiel: "" }]
+      }
+    ],
+    variantesGlobales: []
+  };
+  chargerObjetDansChamps();
+  afficherChantiers();
+  autoSave();
+}
+
+function afficherRepertoire() {
+  const conteneur = document.getElementById("listeDevisSauvegardes");
+  const filtre = (document.getElementById("barreRecherche").value || "").toLowerCase().trim();
+
+  const filtres = repertoireDevis.filter(d => {
