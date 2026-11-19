@@ -1,22 +1,21 @@
-const CACHE_NAME = "chantier-planner-v3";
-const APP_FILES = [
-  "./",
-  "./index.html",
-  "./chantiers.json",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+const CACHE_NAME = 'chantier-planner-v2';
+const CORE_ASSETS = [
+  './',
+  './index.html',
+  './chantiers.json',
+  './manifest.json',
+  './icon-192.png'
 ];
 
-self.addEventListener("install", event => {
+self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_FILES))
+      .then(cache => cache.addAll(CORE_ASSETS))
       .then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener("activate", event => {
+self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
@@ -26,17 +25,22 @@ self.addEventListener("activate", event => {
   );
 });
 
-self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Pour index.html et chantiers.json : réseau d'abord, puis cache en secours (pratique pour voir vite les mises à jour)
-  if (url.pathname.endsWith("/chantiers.json") || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/")) {
+  const isDataOrHtml =
+    url.pathname.endsWith('/chantiers.json') ||
+    url.pathname.endsWith('/index.html') ||
+    url.pathname.endsWith('/');
+
+  if (isDataOrHtml) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          if (response.ok) {
+          if (response && response.status === 200) {
             const copy = response.clone();
             caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
           }
@@ -47,16 +51,16 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Pour le reste (icônes, manifest) : cache puis réseau
   event.respondWith(
     caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(response => {
-        if (response.ok) {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
+        if (response && response.status === 200) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         }
         return response;
-      }).catch(() => cached);
+      });
     })
   );
 });
