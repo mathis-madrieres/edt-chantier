@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chantier-planner-v3';
+const CACHE_NAME = 'chantier-planner-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
