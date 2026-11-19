@@ -128,6 +128,11 @@ th{background:#f1f5f0;color:var(--green)}
     <label>Type de chantier<select id="chantier"></select></label>
     <label>Entreprise<input id="entreprise" value="Jardins & Paysages SARL" placeholder="Ex. Jardins du Sud"></label>
     <label>Adresse / Contact entreprise<input id="entreprise-info" value="27 Route de la voie, 34000 Montpellier • Tél : 04 67 00 00 00 • contact@jardins-sud.fr • SIRET : 914 842 723" placeholder="Adresse, tél, mail, SIRET..."></label>
+    <label>Retrouver un client enregistré
+      <select id="client-select">
+        <option value="">-- Nouveau client ou saisie libre --</option>
+      </select>
+    </label>
     <label>Client (nom / société)<input id="client" value="M. et Mme Dupont" placeholder="Ex. Client Démo"></label>
     <label>Adresse du client<input id="client-adresse" value="14 rue des Oliviers, 34000 Montpellier, France" placeholder="Rue, code postal, ville..."></label>
     <label>Date de début<input id="debut" type="date"></label>
@@ -182,10 +187,12 @@ th{background:#f1f5f0;color:var(--green)}
 
 <section class="panel">
   <h2>4. Devis &amp; Facturation</h2>
-  <p>Générez un devis imprimable au format PDF à transmettre à votre client (avec détail des quantités, unités et TVA).</p>
+  <p>Enregistrez vos devis dans votre navigateur pour retrouver vos clients, ou générez un devis imprimable au format PDF.</p>
   <div class="actions">
-    <button id="generate-pdf">Générer / Télécharger le Devis (PDF)</button>
+    <button type="button" id="save-quote">Enregistrer ce devis</button>
+    <button type="button" id="generate-pdf">Générer / Télécharger le Devis (PDF)</button>
   </div>
+  <div id="saved-quotes-list" class="tablewrap" style="margin-top:16px;"></div>
 </section>
 
 <section class="panel">
@@ -282,7 +289,10 @@ th{background:#f1f5f0;color:var(--green)}
 
 <script>
 const STORAGE_KEY = 'chantier_planner_state_v3';
+const CLIENTS_KEY = 'chantier_planner_clients_v1';
+const QUOTES_KEY = 'chantier_planner_quotes_v1';
 let library = [], selected = new Set(), plan = [], taskState = {}, currentLogo = '', plannedEndDate = '';
+let clientsList = [], savedQuotes = [];
 
 const $ = id => document.getElementById(id);
 const fmt = n => Number(n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -321,6 +331,175 @@ function applyLogo(dataUrl) {
     clearBtn.style.display = 'none';
   }
 }
+
+function loadClients() {
+  try {
+    clientsList = JSON.parse(localStorage.getItem(CLIENTS_KEY) || '[]');
+  } catch (e) {
+    clientsList = [];
+  }
+  renderClientSelect();
+}
+
+function saveClientToDirectory() {
+  const nom = ($('client').value || '').trim();
+  const adresse = ($('client-adresse').value || '').trim();
+  if (!nom) return;
+
+  const idx = clientsList.findIndex(c => c.nom.toLowerCase() === nom.toLowerCase());
+  const entry = { nom, adresse, updatedAt: new Date().toISOString() };
+  if (idx >= 0) {
+    clientsList[idx] = { ...clientsList[idx], ...entry };
+  } else {
+    clientsList.unshift(entry);
+  }
+  localStorage.setItem(CLIENTS_KEY, JSON.stringify(clientsList));
+  renderClientSelect();
+}
+
+function renderClientSelect() {
+  const sel = $('client-select');
+  if (!sel) return;
+  const cur = ($('client').value || '').trim().toLowerCase();
+  sel.innerHTML = '<option value="">-- Nouveau client ou saisie libre --</option>' +
+    clientsList.map((c, i) => {
+      const selectedAttr = cur && c.nom.toLowerCase() === cur ? 'selected' : '';
+      return `<option value="${i}" ${selectedAttr}>${escHtml(c.nom)}${c.adresse ? ' — ' + escHtml(c.adresse) : ''}</option>`;
+    }).join('');
+}
+
+$('client-select').addEventListener('change', e => {
+  const idx = Number(e.target.value);
+  if (Number.isInteger(idx) && clientsList[idx]) {
+    $('client').value = clientsList[idx].nom || '';
+    $('client-adresse').value = clientsList[idx].adresse || '';
+    saveState();
+  }
+});
+
+function loadSavedQuotes() {
+  try {
+    savedQuotes = JSON.parse(localStorage.getItem(QUOTES_KEY) || '[]');
+  } catch (e) {
+    savedQuotes = [];
+  }
+  renderSavedQuotes();
+}
+
+function saveCurrentQuote() {
+  const ts = values();
+  if (!ts.length) {
+    alert('Sélectionnez au moins une tâche avant d’enregistrer le devis.');
+    return;
+  }
+  saveClientToDirectory();
+
+  const totalHT = ts.reduce((s, t) => s + t.totalHT, 0);
+  const totalTVA = ts.reduce((s, t) => s + t.totalTVA, 0);
+  const totalTTC = totalHT + totalTVA;
+  const now = new Date();
+  const numero = `DE-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+
+  const quote = {
+    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    numero,
+    dateEmission: now.toLocaleDateString('fr-FR'),
+    chantierId: $('chantier').value,
+    chantierNom: current()?.nom || '',
+    entreprise: $('entreprise').value,
+    entrepriseInfo: $('entreprise-info').value,
+    client: $('client').value.trim() || 'Client non renseigné',
+    clientAdresse: $('client-adresse').value.trim(),
+    debut: $('debut').value,
+    limite: $('limite').value,
+    equipe: $('equipe').value,
+    tvaRate: $('tva-rate').value,
+    acomptePct: $('acompte-pct').value,
+    validiteInfo: $('validite-info').value,
+    piedPageInfo: $('pied-page-info').value,
+    selected: [...selected],
+    taskState: JSON.parse(JSON.stringify(taskState)),
+    totalHT,
+    totalTVA,
+    totalTTC
+  };
+
+  savedQuotes.unshift(quote);
+  localStorage.setItem(QUOTES_KEY, JSON.stringify(savedQuotes));
+  renderSavedQuotes();
+  $('save-status').textContent = `Devis ${numero} enregistré`;
+}
+
+function restoreQuote(quoteId) {
+  const q = savedQuotes.find(item => item.id === quoteId);
+  if (!q) return;
+
+  if (q.chantierId && library.some(c => c.id === q.chantierId)) {
+    $('chantier').value = q.chantierId;
+  }
+  $('entreprise').value = q.entreprise ?? $('entreprise').value;
+  $('entreprise-info').value = q.entrepriseInfo ?? $('entreprise-info').value;
+  $('client').value = q.client ?? '';
+  $('client-adresse').value = q.clientAdresse ?? '';
+  if (q.debut) $('debut').value = q.debut;
+  $('limite').value = q.limite ?? '';
+  if (q.equipe) $('equipe').value = q.equipe;
+  if (q.tvaRate) $('tva-rate').value = q.tvaRate;
+  if (q.acomptePct !== undefined) $('acompte-pct').value = q.acomptePct;
+  if (q.validiteInfo !== undefined) $('validite-info').value = q.validiteInfo;
+  if (q.piedPageInfo !== undefined) $('pied-page-info').value = q.piedPageInfo;
+
+  taskState = JSON.parse(JSON.stringify(q.taskState || {}));
+  renderTasks(q.selected || null);
+  renderClientSelect();
+  saveState();
+}
+
+function deleteQuote(quoteId) {
+  savedQuotes = savedQuotes.filter(item => item.id !== quoteId);
+  localStorage.setItem(QUOTES_KEY, JSON.stringify(savedQuotes));
+  renderSavedQuotes();
+}
+
+function renderSavedQuotes() {
+  const container = $('saved-quotes-list');
+  if (!container) return;
+  if (!savedQuotes.length) {
+    container.innerHTML = '<p class="muted">Aucun devis enregistré pour le moment.</p>';
+    return;
+  }
+  container.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>N° Devis</th>
+          <th>Date</th>
+          <th>Client</th>
+          <th>Chantier</th>
+          <th>Total TTC</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${savedQuotes.map(q => `
+          <tr>
+            <td><strong>${escHtml(q.numero)}</strong></td>
+            <td>${escHtml(q.dateEmission)}</td>
+            <td>${escHtml(q.client)}</td>
+            <td>${escHtml(q.chantierNom)}</td>
+            <td><strong>${fmt(q.totalTTC)} €</strong></td>
+            <td style="white-space:nowrap;">
+              <button type="button" class="secondary" onclick="restoreQuote('${escHtml(q.id)}')" style="padding:5px 9px;font-size:.82rem;">Charger</button>
+              <button type="button" class="danger" onclick="deleteQuote('${escHtml(q.id)}')" style="padding:5px 9px;font-size:.82rem;">Supprimer</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+$('save-quote').onclick = saveCurrentQuote;
 
 function saveState() {
   try {
@@ -387,6 +566,8 @@ async function load() {
     } else {
       renderTasks();
     }
+    loadClients();
+    loadSavedQuotes();
   } catch (e) {
     $('tasks').innerHTML = '<div class="alert">Impossible de charger chantiers.json : ' + escHtml(e.message) + '</div>';
   }
@@ -609,7 +790,11 @@ $('chantier').onchange = () => {
 };
 
 ['entreprise', 'entreprise-info', 'client', 'client-adresse', 'limite', 'equipe', 'tva-rate', 'acompte-pct', 'validite-info', 'pied-page-info'].forEach(id => {
-  $(id).addEventListener('input', () => { updateTotal(); saveState(); });
+  $(id).addEventListener('input', () => {
+    if (id === 'client') renderClientSelect();
+    updateTotal();
+    saveState();
+  });
 });
 
 $('debut').onchange = () => {
