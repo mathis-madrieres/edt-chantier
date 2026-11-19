@@ -1,4 +1,4 @@
-const CACHE_NAME = "chantier-planner-v2";
+const CACHE_NAME = "chantier-planner-v3";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -19,7 +19,9 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(keys => Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+      ))
       .then(() => self.clients.claim())
   );
 });
@@ -29,8 +31,8 @@ self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Réseau d'abord pour chantiers.json afin de récupérer les dernières données si connecté
-  if (url.pathname.endsWith("/chantiers.json")) {
+  // Pour index.html et chantiers.json : réseau d'abord, puis cache en secours (pratique pour voir vite les mises à jour)
+  if (url.pathname.endsWith("/chantiers.json") || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/")) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
@@ -45,19 +47,16 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Cache d'abord pour les fichiers de l'application, avec mise à jour en arrière-plan
+  // Pour le reste (icônes, manifest) : cache puis réseau
   event.respondWith(
     caches.match(event.request).then(cached => {
-      const networkFetch = fetch(event.request)
-        .then(response => {
-          if (response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-          }
-          return response;
-        })
-        .catch(() => cached);
-      return cached || networkFetch;
+      return cached || fetch(event.request).then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      }).catch(() => cached);
     })
   );
 });
