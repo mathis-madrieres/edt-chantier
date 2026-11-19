@@ -9,6 +9,8 @@
           "nom": "Repérage et préparation du terrain",
           "duree_jours": 0.5,
           "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
           "prix_moyen_ttc": 150.00,
           "materiel": "Mètre, piquets, cordeau",
           "apres": []
@@ -18,56 +20,55 @@
           "nom": "Réception et contrôle des végétaux",
           "duree_jours": 0.5,
           "effectif": 2,
+          "unite": "forfait",
+          "quantite_defaut": 1,
           "prix_moyen_ttc": 200.00,
           "materiel": "Véhicule, bâche, outils de manutention",
-          "apres": [
-            "reperage"
-          ]
+          "apres": ["reperage"]
         },
         {
           "id": "preparation-sol",
           "nom": "Préparation du sol et amendement",
           "duree_jours": 1,
           "effectif": 2,
-          "prix_moyen_ttc": 350.00,
+          "unite": "ml",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 17.50,
           "materiel": "Bêche, motoculteur si adapté, amendement",
-          "apres": [
-            "reperage"
-          ]
+          "apres": ["reperage"]
         },
         {
           "id": "plantation",
           "nom": "Mise en place et plantation des arbustes",
           "duree_jours": 1.5,
           "effectif": 2,
-          "prix_moyen_ttc": 550.00,
+          "unite": "ml",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 27.50,
           "materiel": "Pelle, transplantoir, sécateur, arrosoir",
-          "apres": [
-            "approvisionnement",
-            "preparation-sol"
-          ]
+          "apres": ["approvisionnement", "preparation-sol"]
         },
         {
           "id": "arrosage",
           "nom": "Arrosage copieux et cuvettes",
           "duree_jours": 0.5,
           "effectif": 2,
-          "prix_moyen_ttc": 120.00,
+          "unite": "ml",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 6.00,
           "materiel": "Tuyau, arrosoir",
-          "apres": [
-            "plantation"
-          ]
+          "apres": ["plantation"]
         },
         {
           "id": "finition",
           "nom": "Paillage, nettoyage et contrôle final",
           "duree_jours": 0.5,
           "effectif": 2,
-          "prix_moyen_ttc": 180.00,
+          "unite": "ml",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 9.00,
           "materiel": "Paillage, râteau, balai",
-          "apres": [
-            "arrosage"
-          ]
+          "apres": ["arrosage"]
         }
       ]
     },
@@ -80,6 +81,8 @@
           "nom": "Diagnostic du terrain et implantation",
           "duree_jours": 0.5,
           "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
           "prix_moyen_ttc": 120.00,
           "materiel": "Mètre, piquets, cordeau",
           "apres": []
@@ -89,55 +92,55 @@
           "nom": "Décompactage et préparation du sol",
           "duree_jours": 1,
           "effectif": 2,
-          "prix_moyen_ttc": 400.00,
+          "unite": "m²",
+          "quantite_defaut": 100,
+          "prix_moyen_ttc": 4.00,
           "materiel": "Motobineuse ou motoculteur, EPI",
-          "apres": [
-            "diagnostic"
-          ]
+          "apres": ["diagnostic"]
         },
         {
           "id": "nivellement",
           "nom": "Apport de terre végétale et nivellement",
           "duree_jours": 1,
           "effectif": 2,
-          "prix_moyen_ttc": 450.00,
+          "unite": "m²",
+          "quantite_defaut": 100,
+          "prix_moyen_ttc": 4.50,
           "materiel": "Terre végétale, brouette, râteau, règle",
-          "apres": [
-            "decompactage"
-          ]
+          "apres": ["decompactage"]
         },
         {
           "id": "semis",
           "nom": "Semis et enfouissement léger des graines",
           "duree_jours": 0.5,
           "effectif": 2,
-          "prix_moyen_ttc": 250.00,
+          "unite": "m²",
+          "quantite_defaut": 100,
+          "prix_moyen_ttc": 2.50,
           "materiel": "Semences, semoir, râteau",
-          "apres": [
-            "nivellement"
-          ]
+          "apres": ["nivellement"]
         },
         {
           "id": "roulage",
           "nom": "Roulage et premier arrosage",
           "duree_jours": 0.5,
           "effectif": 1,
-          "prix_moyen_ttc": 130.00,
+          "unite": "m²",
+          "quantite_defaut": 100,
+          "prix_moyen_ttc": 1.30,
           "materiel": "Rouleau, tuyau d’arrosage",
-          "apres": [
-            "semis"
-          ]
+          "apres": ["semis"]
         },
         {
           "id": "repli",
           "nom": "Nettoyage et réception du chantier",
           "duree_jours": 0.5,
           "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
           "prix_moyen_ttc": 100.00,
           "materiel": "Balai, outils de nettoyage",
-          "apres": [
-            "roulage"
-          ]
+          "apres": ["roulage"]
         }
       ]
     },
@@ -150,6 +153,8 @@
           "nom": "Repérage, traçage et implantation du massif",
           "duree_jours": 0.5,
           "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
           "prix_moyen_ttc": 140.00,
           "materiel": "Plan, cordeau, piquets, bombe de traçage",
           "apres": []
@@ -159,55 +164,155 @@
           "nom": "Désherbage et nettoyage de la zone",
           "duree_jours": 0.5,
           "effectif": 2,
-          "prix_moyen_ttc": 160.00,
+          "unite": "m²",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 6.40,
           "materiel": "Binette, outils manuels, sacs",
-          "apres": [
-            "conception"
-          ]
+          "apres": ["conception"]
         },
         {
           "id": "sol",
           "nom": "Préparation et amendement du sol",
           "duree_jours": 0.5,
           "effectif": 2,
-          "prix_moyen_ttc": 220.00,
+          "unite": "m²",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 8.80,
           "materiel": "Bêche, fourche, compost ou amendement",
-          "apres": [
-            "desherbage"
-          ]
+          "apres": ["desherbage"]
         },
         {
           "id": "vegetaux",
           "nom": "Répartition et plantation des végétaux",
           "duree_jours": 1,
           "effectif": 2,
-          "prix_moyen_ttc": 480.00,
+          "unite": "m²",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 19.20,
           "materiel": "Végétaux, transplantoir, pelle, sécateur",
-          "apres": [
-            "sol"
-          ]
+          "apres": ["sol"]
         },
         {
           "id": "paillage",
           "nom": "Mise en place du paillage et arrosage",
           "duree_jours": 0.5,
           "effectif": 2,
-          "prix_moyen_ttc": 210.00,
+          "unite": "m²",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 8.40,
           "materiel": "Paillage, tuyau, arrosoir",
-          "apres": [
-            "vegetaux"
-          ]
+          "apres": ["vegetaux"]
         },
         {
           "id": "reception",
           "nom": "Nettoyage et contrôle des finitions",
           "duree_jours": 0.5,
           "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
           "prix_moyen_ttc": 110.00,
           "materiel": "Balai, râteau",
-          "apres": [
-            "paillage"
-          ]
+          "apres": ["paillage"]
+        }
+      ]
+    },
+    {
+      "id": "pose-cloture",
+      "nom": "Pose d’une clôture rigide",
+      "taches": [
+        {
+          "id": "piquetage-cloture",
+          "nom": "Piquetage, alignement et repérage réseaux",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 180.00,
+          "materiel": "Cordeau, piquets, niveau laser, détecteur",
+          "apres": []
+        },
+        {
+          "id": "scellement-poteaux",
+          "nom": "Forage et scellement des poteaux",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 32.00,
+          "materiel": "Tarière, bétonnière, niveau, pelles",
+          "apres": ["piquetage-cloture"]
+        },
+        {
+          "id": "pose-panneaux",
+          "nom": "Pose des panneaux rigides et plaques soubassement",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "ml",
+          "quantite_defaut": 25,
+          "prix_moyen_ttc": 44.00,
+          "materiel": "Panneaux, clips, visseuse, cale de pose",
+          "apres": ["scellement-poteaux"]
+        },
+        {
+          "id": "finition-cloture",
+          "nom": "Réglages, nettoyage et réception",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 120.00,
+          "materiel": "Clés, balai, évacuation gravats",
+          "apres": ["pose-panneaux"]
+        }
+      ]
+    },
+    {
+      "id": "terrasse-bois",
+      "nom": "Création d’une terrasse bois sur plots",
+      "taches": [
+        {
+          "id": "implantation-terrasse",
+          "nom": "Implantation, niveaux et préparation du fond",
+          "duree_jours": 0.5,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 12.00,
+          "materiel": "Niveau laser, cordeau, pelle, râteau",
+          "apres": []
+        },
+        {
+          "id": "geotextile-plots",
+          "nom": "Pose géotextile, plots réglables et lambourdes",
+          "duree_jours": 1,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 38.00,
+          "materiel": "Géotextile, plots, lambourdes, niveau, scie",
+          "apres": ["implantation-terrasse"]
+        },
+        {
+          "id": "platelage-bois",
+          "nom": "Pose et vissage des lames de terrasse",
+          "duree_jours": 1.5,
+          "effectif": 2,
+          "unite": "m²",
+          "quantite_defaut": 20,
+          "prix_moyen_ttc": 65.00,
+          "materiel": "Lames bois, vis inox, espaceurs, scie circulaire",
+          "apres": ["geotextile-plots"]
+        },
+        {
+          "id": "finition-terrasse",
+          "nom": "Plinthes de finition, découpes et nettoyage",
+          "duree_jours": 0.5,
+          "effectif": 1,
+          "unite": "forfait",
+          "quantite_defaut": 1,
+          "prix_moyen_ttc": 160.00,
+          "materiel": "Ponceuse, scie sauteuse, balai",
+          "apres": ["platelage-bois"]
         }
       ]
     }
