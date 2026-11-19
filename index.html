@@ -320,7 +320,12 @@ function ensureTaskDefaults(t) {
 function renderTasks(savedSelected = null) {
   const c = current();
   if (!c) return;
-  selected = savedSelected ? new Set(savedSelected.filter(id => c.taches.some(t => t.id === id))) : new Set(c.taches.map(t => t.id));
+  const validSavedIds = Array.isArray(savedSelected)
+    ? savedSelected.filter(id => c.taches.some(t => t.id === id))
+    : [];
+  selected = validSavedIds.length
+    ? new Set(validSavedIds)
+    : new Set(c.taches.map(t => t.id));
   c.taches.forEach(ensureTaskDefaults);
 
   $('tasks').innerHTML = c.taches.map(t => {
@@ -428,16 +433,43 @@ function values() {
   });
 }
 
+function renderQuoteRows(ts) {
+  const tbody = $('pdf-items');
+  if (!tbody) return;
+  if (!ts.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="muted">Aucune prestation sélectionnée.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = ts.map(t => `
+    <tr>
+      <td>${escHtml(t.nom)}</td>
+      <td>${escHtml(t.unite)}</td>
+      <td>${fmt(t.quantite)}</td>
+      <td>${fmt(t.prixUnitaire)} €</td>
+      <td>${fmt(t.duree)} j</td>
+      <td><strong>${fmt(t.prix)} €</strong></td>
+    </tr>
+  `).join('');
+}
+
 function updateTotal() {
   const ts = values();
   const totalDays = ts.reduce((s, t) => s + t.duree, 0);
   const totalTTC = ts.reduce((s, t) => s + t.prix, 0);
-  const tvaCoeff = 1 + (Number($('tva-rate').value || 10) / 100);
-  const totalHT = totalTTC / tvaCoeff;
+  const tvaRate = Number($('tva-rate').value || 10);
+  const totalHT = totalTTC / (1 + tvaRate / 100);
+  const tva = totalTTC - totalHT;
+
   $('total').textContent = fmt(totalDays) + ' j';
-  $('crewstat').textContent = $('equipe').value + ' pers.';
+  $('crewstat').textContent = ($('equipe').value || 1) + ' pers.';
   $('pricehtstat').textContent = fmt(totalHT) + ' €';
   $('pricestat').textContent = fmt(totalTTC) + ' €';
+
+  renderQuoteRows(ts);
+  $('pdf-tva-label').textContent = tvaRate;
+  $('pdf-total-ht').textContent = fmt(totalHT);
+  $('pdf-tva').textContent = fmt(tva);
+  $('pdf-total-ttc').textContent = fmt(totalTTC);
 }
 
 // --- Gestionnaire du Logo ---
@@ -621,6 +653,7 @@ $('recalc').onclick = schedule;
 $('generate-pdf').onclick = () => {
   const ts = values();
   if (!ts.length) { alert("Veuillez sélectionner au moins une tâche."); return; }
+  updateTotal();
 
   const now = new Date();
   const devisNum = `DEV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
@@ -635,30 +668,6 @@ $('generate-pdf').onclick = () => {
 
   const totalCharge = ts.reduce((s, t) => s + t.duree, 0);
   $('pdf-duree').textContent = fmt(totalCharge) + ' j';
-
-  let totalTTC = 0;
-  $('pdf-items').innerHTML = ts.map(t => {
-    totalTTC += t.prix;
-    return `
-      <tr>
-        <td>${escHtml(t.nom)}</td>
-        <td>${escHtml(t.unite)}</td>
-        <td>${fmt(t.quantite)}</td>
-        <td>${fmt(t.prixUnitaire)} €</td>
-        <td>${fmt(t.duree)} j</td>
-        <td><strong>${fmt(t.prix)} €</strong></td>
-      </tr>
-    `;
-  }).join('');
-
-  const tvaRate = Number($('tva-rate').value || 10);
-  const totalHT = totalTTC / (1 + tvaRate / 100);
-  const tva = totalTTC - totalHT;
-
-  $('pdf-tva-label').textContent = tvaRate;
-  $('pdf-total-ht').textContent = fmt(totalHT);
-  $('pdf-tva').textContent = fmt(tva);
-  $('pdf-total-ttc').textContent = fmt(totalTTC);
 
   window.print();
 };
