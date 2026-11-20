@@ -32,6 +32,7 @@
       #tab-devis table { width:100%; }
       #tab-devis .overflow-x-auto { overflow:visible !important; }
       #tab-devis .quote-print-meta { display:block !important; }
+      #tab-devis #dv-client-extra { display:none !important; }
       #tab-devis .quote-print-terms { display:block !important; }
       #tab-devis .quote-print-header, #tab-devis table, #tab-devis .quote-totals { break-inside:avoid; }
       #tab-devis input, #tab-devis select { font:inherit; }
@@ -180,7 +181,7 @@
           <p id="dv-template-desc" class="text-xs text-green-700 mt-2 hidden"></p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm no-print">
           <div>
             <label class="block font-medium mb-1">Client</label>
             <input type="text" id="dv-client" placeholder="Nom &amp; Prénom du client" class="w-full border border-stone-300 rounded-lg px-3 py-2" />
