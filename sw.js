@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chantier-planner-paysager-v2';
+const CACHE_NAME = 'chantier-planner-paysager-v3';
 
 // Fichiers essentiels mis en cache dès l'installation
 const CORE_ASSETS = [
