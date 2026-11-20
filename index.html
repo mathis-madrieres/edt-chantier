@@ -13,6 +13,32 @@
       body { background: white !important; }
       .print-area { box-shadow: none !important; border: none !important; }
     }
+
+    /* Devis professionnel : écran et export PDF */
+    .quote-print-header { display:none; }
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      body { background:#fff !important; color:#1c1917 !important; font-size:11px !important; }
+      body * { visibility:hidden !important; }
+      #tab-devis, #tab-devis * { visibility:visible !important; }
+      #tab-devis { display:block !important; position:absolute; left:0; top:0; width:100%; }
+      #tab-devis > .print-area { position:static; width:100%; padding:0 !important; margin:0 !important; border:0 !important; box-shadow:none !important; }
+      #tab-devis .no-print, #tab-devis .no-print * { display:none !important; }
+      .quote-print-header { display:flex !important; justify-content:space-between; gap:20px; border-bottom:3px solid #166534; padding-bottom:14px; margin-bottom:18px; }
+      .quote-print-header img { max-width:105px; max-height:75px; object-fit:contain; }
+      #dv-lines input { border:0 !important; padding:0 !important; background:transparent !important; color:#111827 !important; }
+      #dv-lines td { padding:7px 5px !important; }
+      #dv-lines th:last-child, #dv-lines td:last-child { display:none !important; }
+      #tab-devis table { width:100%; }
+      #tab-devis .overflow-x-auto { overflow:visible !important; }
+      #tab-devis .quote-print-meta { display:block !important; }
+      #tab-devis #dv-client-extra { display:none !important; }
+      #tab-devis .quote-print-terms { display:block !important; }
+      #tab-devis .quote-print-header, #tab-devis table, #tab-devis .quote-totals { break-inside:avoid; }
+      #tab-devis input, #tab-devis select { font:inherit; }
+    }
+    .quote-print-meta, .quote-print-terms { display:none; }
+
   </style>
 </head>
 <body class="bg-stone-100 text-stone-800 font-sans min-h-screen flex flex-col">
@@ -155,7 +181,7 @@
           <p id="dv-template-desc" class="text-xs text-green-700 mt-2 hidden"></p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm no-print">
           <div>
             <label class="block font-medium mb-1">Client</label>
             <input type="text" id="dv-client" placeholder="Nom &amp; Prénom du client" class="w-full border border-stone-300 rounded-lg px-3 py-2" />
@@ -821,7 +847,125 @@
       `).join('');
     }
 
+
+    // --- EXTENSION DEVIS PROFESSIONNELLE (isolée du planning et du catalogue) ---
+    const devisCompanyKey = 'cpp_company_profile_v1';
+    let devisCompany = JSON.parse(localStorage.getItem(devisCompanyKey) || '{}');
+    function initDevisPro() {
+      const printArea = document.querySelector('#tab-devis .print-area');
+      if (!printArea || document.getElementById('dv-company-panel')) return;
+      const printHeader = document.createElement('div');
+      printHeader.className = 'quote-print-header';
+      printHeader.id = 'dv-print-header';
+      printHeader.innerHTML = '<div class="flex items-start gap-3"><img id="dv-print-logo" alt="Logo entreprise"><div><div id="dv-print-company" class="font-bold text-xl text-green-800"></div><div id="dv-print-company-details" class="text-xs text-stone-600 whitespace-pre-line mt-1"></div></div></div><div class="text-right"><div class="text-2xl font-bold tracking-wide text-green-800">DEVIS</div><div class="text-sm mt-1">N° <span id="dv-print-number"></span></div><div class="text-xs text-stone-500 mt-1">Émis le <span id="dv-print-date"></span></div></div>';
+      printArea.insertBefore(printHeader, printArea.firstChild);
+
+      const companyPanel = document.createElement('div');
+      companyPanel.id = 'dv-company-panel';
+      companyPanel.className = 'no-print bg-stone-50 border border-stone-200 rounded-xl p-4 mb-5';
+      companyPanel.innerHTML = '<div class="flex flex-wrap justify-between items-center gap-2 mb-3"><h3 class="font-bold text-stone-800">Vos coordonnées professionnelles</h3><span class="text-xs text-stone-500">Enregistrées sur cet appareil</span></div><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm"><input id="co-name" class="border rounded-lg px-3 py-2" placeholder="Nom de l’entreprise"><input id="co-address" class="border rounded-lg px-3 py-2" placeholder="Adresse"><input id="co-phone" class="border rounded-lg px-3 py-2" placeholder="Téléphone"><input id="co-email" type="email" class="border rounded-lg px-3 py-2" placeholder="E-mail"><input id="co-siret" class="border rounded-lg px-3 py-2" placeholder="SIRET"><input id="co-legal" class="border rounded-lg px-3 py-2" placeholder="Statut / mention légale (facultatif)"></div><div class="flex flex-wrap items-center gap-3 mt-3"><label class="text-sm font-medium">Logo <input id="co-logo-file" type="file" accept="image/*" class="block text-xs mt-1"></label><button id="co-save" type="button" class="bg-green-700 text-white rounded-lg px-4 py-2 text-sm font-medium">Enregistrer mes coordonnées</button><span id="co-status" class="text-xs text-green-700"></span></div>';
+      printHeader.insertAdjacentElement('afterend', companyPanel);
+      ['name','address','phone','email','siret','legal'].forEach(k => { const el=document.getElementById('co-'+k); if(el) el.value=devisCompany[k]||''; });
+
+      const clientBlock = document.createElement('div');
+      clientBlock.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 mb-5 text-sm';
+      clientBlock.id = 'dv-client-extra';
+      clientBlock.innerHTML = '<div><label class="block font-medium mb-1">Adresse du client</label><input id="dv-client-address" class="w-full border border-stone-300 rounded-lg px-3 py-2" placeholder="Adresse complète"></div><div><label class="block font-medium mb-1">E-mail / téléphone du client</label><input id="dv-client-contact" class="w-full border border-stone-300 rounded-lg px-3 py-2" placeholder="Coordonnées du client"></div><div><label class="block font-medium mb-1">Date du devis</label><input id="dv-date" type="date" class="w-full border border-stone-300 rounded-lg px-3 py-2"></div><div><label class="block font-medium mb-1">Validité du devis</label><input id="dv-validity" class="w-full border border-stone-300 rounded-lg px-3 py-2" value="30 jours"></div><div class="md:col-span-2"><label class="block font-medium mb-1">Conditions / modalités de paiement</label><input id="dv-payment" class="w-full border border-stone-300 rounded-lg px-3 py-2" value="Acompte de 30 % à la commande, solde à la fin des travaux."></div><div class="md:col-span-2"><label class="block font-medium mb-1">Notes et conditions particulières</label><textarea id="dv-notes" rows="2" class="w-full border border-stone-300 rounded-lg px-3 py-2" placeholder="Délais, accès chantier, évacuation, réserves..."></textarea></div>';
+      const quickBlock = document.querySelector('#tab-devis .print-area .flex.flex-wrap.gap-2.items-center.bg-stone-50');
+      if (quickBlock) quickBlock.insertAdjacentElement('beforebegin', clientBlock);
+
+      const printMeta = document.createElement('div');
+      printMeta.className='quote-print-meta text-xs text-stone-600 mt-3';
+      printMeta.id='dv-print-client';
+      printArea.insertBefore(printMeta, document.querySelector('#tab-devis .overflow-x-auto'));
+      const terms = document.createElement('div');
+      terms.className='quote-print-terms text-xs text-stone-600 border-t border-stone-200 mt-5 pt-3';
+      terms.id='dv-print-terms';
+      printArea.appendChild(terms);
+
+      document.getElementById('co-save').addEventListener('click', () => {
+        ['name','address','phone','email','siret','legal'].forEach(k => devisCompany[k]=document.getElementById('co-'+k).value.trim());
+        localStorage.setItem(devisCompanyKey,JSON.stringify(devisCompany));
+        document.getElementById('co-status').textContent='Coordonnées enregistrées.';
+        updateDevisPrintHeader();
+      });
+      document.getElementById('co-logo-file').addEventListener('change', e => {
+        const file=e.target.files && e.target.files[0]; if(!file) return;
+        if(!file.type.startsWith('image/')) { alert('Choisissez un fichier image.'); return; }
+        if(file.size>1500000) { alert('Le logo doit faire moins de 1,5 Mo.'); return; }
+        const reader=new FileReader();
+        reader.onload=() => {
+          devisCompany.logo=reader.result;
+          localStorage.setItem(devisCompanyKey,JSON.stringify(devisCompany));
+          updateDevisPrintHeader();
+          document.getElementById('co-status').textContent='Logo enregistré.';
+        };
+        reader.readAsDataURL(file);
+      });
+      const dateEl=document.getElementById('dv-date');
+      if(dateEl && !dateEl.value) dateEl.value=new Date().toISOString().slice(0,10);
+      updateDevisPrintHeader();
+    }
+    function updateDevisPrintHeader() {
+      const put=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val||'';};
+      put('dv-print-company',devisCompany.name||'Votre entreprise');
+      put('dv-print-company-details',[devisCompany.address,devisCompany.phone,devisCompany.email,devisCompany.siret,devisCompany.legal].filter(Boolean).join('\n'));
+      const logo=document.getElementById('dv-print-logo');
+      if(logo){logo.src=devisCompany.logo||'';logo.style.display=devisCompany.logo?'block':'none';}
+      put('dv-print-number',window.currentQuoteNumber||('DEV-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6)));
+      put('dv-print-date',document.getElementById('dv-date')?.value ? new Date(document.getElementById('dv-date').value+'T00:00:00').toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR'));
+      const client=document.getElementById('dv-client')?.value||'';
+      const address=document.getElementById('dv-client-address')?.value||'';
+      const contact=document.getElementById('dv-client-contact')?.value||'';
+      const objet=document.getElementById('dv-objet')?.value||'';
+      const meta=document.getElementById('dv-print-client');
+      if(meta) meta.innerHTML='<div class="font-bold text-sm text-stone-800 mb-1">Destinataire : '+escapeQuoteHtml(client)+'</div><div>'+escapeQuoteHtml(address)+'</div><div>'+escapeQuoteHtml(contact)+'</div><div class="mt-2"><strong>Objet :</strong> '+escapeQuoteHtml(objet)+'</div><div><strong>Validité :</strong> '+escapeQuoteHtml(document.getElementById('dv-validity')?.value||'')+'</div>';
+      const terms=document.getElementById('dv-print-terms');
+      if(terms) terms.innerHTML='<strong>Conditions de paiement :</strong> '+escapeQuoteHtml(document.getElementById('dv-payment')?.value||'')+'<br><strong>Notes :</strong> '+escapeQuoteHtml(document.getElementById('dv-notes')?.value||'')+'<br><div class="mt-3">Bon pour accord, date et signature du client :</div><div style="height:48px"></div>';
+    }
+    function escapeQuoteHtml(value) { return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    const originalSaveCurrentDevis = saveCurrentDevis;
+    saveCurrentDevis = function() {
+      const client=document.getElementById('dv-client').value.trim()||'Client sans nom';
+      const objet=document.getElementById('dv-objet').value.trim()||'Devis paysager';
+      const tva=parseFloat(document.getElementById('dv-tva').value);
+      const totalHT=state.currentLines.reduce((a,l)=>a+(Number(l.qte)||0)*(Number(l.prix)||0),0);
+      const totalTTC=totalHT*(1+tva/100);
+      const id=Date.now();
+      const extra={clientAddress:document.getElementById('dv-client-address')?.value||'',clientContact:document.getElementById('dv-client-contact')?.value||'',quoteDate:document.getElementById('dv-date')?.value||'',validity:document.getElementById('dv-validity')?.value||'',payment:document.getElementById('dv-payment')?.value||'',notes:document.getElementById('dv-notes')?.value||'',quoteNumber:'DEV-'+new Date().getFullYear()+'-'+String(id).slice(-6)};
+      state.devisSaved.unshift({id,date:new Date().toLocaleDateString('fr-FR'),client,objet,tva,totalTTC,lines:JSON.parse(JSON.stringify(state.currentLines)),...extra});
+      window.currentQuoteNumber=extra.quoteNumber;
+      saveState();
+      updateDevisPrintHeader();
+      alert('Devis sauvegardé.');
+    };
+    const originalLoadDevis = loadDevis;
+    loadDevis = function(id) {
+      const dv=state.devisSaved.find(d=>d.id===id); if(!dv) return;
+      document.getElementById('dv-client').value=dv.client||'';
+      document.getElementById('dv-objet').value=dv.objet||'';
+      document.getElementById('dv-tva').value=String(dv.tva??20);
+      state.currentLines=JSON.parse(JSON.stringify(dv.lines||[]));
+      const values={ 'dv-client-address':dv.clientAddress,'dv-client-contact':dv.clientContact,'dv-date':dv.quoteDate,'dv-validity':dv.validity,'dv-payment':dv.payment,'dv-notes':dv.notes };
+      Object.entries(values).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v||'';});
+      window.currentQuoteNumber=dv.quoteNumber||('DEV-'+new Date().getFullYear()+'-'+String(dv.id).slice(-6));
+      renderDevisLines(); updateDevisPrintHeader();
+    };
+    const originalResetDevis = resetDevis;
+    resetDevis = function() {
+      originalResetDevis();
+      ['dv-client-address','dv-client-contact','dv-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      const today=new Date().toISOString().slice(0,10);
+      const date=document.getElementById('dv-date');if(date)date.value=today;
+      const validity=document.getElementById('dv-validity');if(validity)validity.value='30 jours';
+      const payment=document.getElementById('dv-payment');if(payment)payment.value='Acompte de 30 % à la commande, solde à la fin des travaux.';
+      window.currentQuoteNumber=null; updateDevisPrintHeader();
+    };
+    window.addEventListener('beforeprint',updateDevisPrintHeader);
+    document.addEventListener('input',e=>{if(e.target.closest('#tab-devis'))updateDevisPrintHeader();});
+
     initChantiersTypesSelect();
+    initDevisPro();
     renderAll();
 
     // --- ENREGISTREMENT SERVICE WORKER ---
