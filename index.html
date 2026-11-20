@@ -174,6 +174,40 @@
           </div>
         </div>
 
+
+        <!-- Module devis professionnel -->
+        <section class="bg-white border border-stone-200 rounded-xl p-4 mb-6 space-y-4" id="dv-pro-details">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div><h3 class="font-bold text-stone-800">Informations professionnelles</h3><p class="text-xs text-stone-500">Coordonnées, références et conditions du devis</p></div>
+            <span class="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold" id="dv-numero-badge">DEVIS —</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div class="space-y-2">
+              <h4 class="font-semibold text-green-800">Votre entreprise</h4>
+              <input id="dv-entreprise" placeholder="Nom de l'entreprise" class="w-full border rounded-lg px-3 py-2">
+              <input id="dv-entreprise-coord" placeholder="Adresse, téléphone, e-mail" class="w-full border rounded-lg px-3 py-2">
+              <input id="dv-siret" placeholder="SIRET / RCS (facultatif)" class="w-full border rounded-lg px-3 py-2">
+            </div>
+            <div class="space-y-2">
+              <h4 class="font-semibold text-green-800">Coordonnées du client</h4>
+              <input id="dv-client-adresse" placeholder="Adresse du client / chantier" class="w-full border rounded-lg px-3 py-2">
+              <div class="grid grid-cols-2 gap-2"><input id="dv-client-email" type="email" placeholder="E-mail" class="w-full border rounded-lg px-3 py-2"><input id="dv-client-tel" placeholder="Téléphone" class="w-full border rounded-lg px-3 py-2"></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <label class="block">Numéro de devis<input id="dv-numero" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+            <label class="block">Date du devis<input id="dv-date" type="date" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+            <label class="block">Valable jusqu'au<input id="dv-validite" type="date" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+            <label class="block">Statut<select id="dv-statut" class="mt-1 w-full border rounded-lg px-3 py-2 bg-white"><option>Brouillon</option><option>Envoyé</option><option>Accepté</option><option>Refusé</option><option>Facturé</option></select></label>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+            <label>Remise globale (%)<input id="dv-remise" type="number" min="0" max="100" step="0.01" value="0" class="mt-1 w-full border rounded-lg px-3 py-2" oninput="renderDevisLines()"></label>
+            <label>Acompte demandé (%)<input id="dv-acompte" type="number" min="0" max="100" step="1" value="30" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+            <label>Conditions de paiement<input id="dv-paiement" value="30 % à la commande, solde à la réception" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+          </div>
+          <label class="block text-sm">Notes, exclusions et conditions particulières<textarea id="dv-notes" rows="2" placeholder="Délais prévisionnels, préparation du terrain, évacuation, conditions météo…" class="mt-1 w-full border rounded-lg px-3 py-2"></textarea></label>
+        </section>
+
         <!-- Ajout rapide depuis catalogue -->
         <div class="flex flex-wrap gap-2 items-center bg-stone-50 p-3 rounded-lg border border-stone-200 mb-4 no-print text-sm">
           <span class="font-medium text-stone-600">Poste unitaire :</span>
@@ -833,5 +867,83 @@
       });
     }
   </script>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const euro = n => new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(Number(n)||0);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const today = () => new Date().toISOString().slice(0,10);
+  const addDays = (d,n) => {const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return x.toISOString().slice(0,10);};
+  const fields = ['entreprise','entreprise-coord','siret','client-adresse','client-email','client-tel','numero','date','validite','statut','remise','acompte','paiement','notes'];
+  const readMeta = () => Object.fromEntries(fields.map(k=>[k,$('dv-'+k)?.value ?? '']));
+  const writeMeta = m => fields.forEach(k=>{if($('dv-'+k)) $('dv-'+k).value = m?.[k] ?? (k==='date'?today():k==='validite'?addDays(today(),30):k==='statut'?'Brouillon':k==='remise'?'0':k==='acompte'?'30':k==='paiement'?'30 % à la commande, solde à la réception':'');});
+  const calc = () => {
+    const ht = state.currentLines.reduce((s,l)=>s+(Number(l.qte)||0)*(Number(l.prix)||0),0);
+    const discount = Math.min(100,Math.max(0,Number($('dv-remise')?.value)||0));
+    const net = ht*(1-discount/100), rate=Number($('dv-tva').value)||0, tax=net*rate/100, ttc=net+tax;
+    return {ht,discount,net,tax,ttc,rate};
+  };
+  window.renderDevisLines = function(){
+    const body=$('dv-lines');
+    body.innerHTML=state.currentLines.map((l,i)=>{
+      const total=(Number(l.qte)||0)*(Number(l.prix)||0);
+      return '<tr>'+
+        '<td class="p-2 min-w-56"><input aria-label="Désignation" value="'+esc(l.nom)+'" onchange="updateLine('+i+',\'nom\',this.value)" class="w-full border rounded px-2 py-1"></td>'+
+        '<td class="p-2"><input aria-label="Unité" value="'+esc(l.unite)+'" onchange="updateLine('+i+',\'unite\',this.value)" class="w-20 border rounded px-2 py-1"></td>'+
+        '<td class="p-2"><input aria-label="Quantité" type="number" min="0" step="0.01" value="'+(Number(l.qte)||0)+'" onchange="updateLine('+i+',\'qte\',this.value)" class="w-20 border rounded px-2 py-1 text-right"></td>'+
+        '<td class="p-2"><input aria-label="Prix unitaire HT" type="number" min="0" step="0.01" value="'+(Number(l.prix)||0)+'" onchange="updateLine('+i+',\'prix\',this.value)" class="w-24 border rounded px-2 py-1 text-right"></td>'+
+        '<td class="p-2 text-right font-semibold whitespace-nowrap">'+euro(total)+'</td>'+
+        '<td class="p-2 text-center no-print"><button onclick="removeLine('+i+')" class="text-red-600 font-bold" aria-label="Supprimer la ligne">×</button></td></tr>';
+    }).join('');
+    const c=calc();
+    $('dv-total-ht').textContent=euro(c.ht);
+    $('dv-total-tva').textContent=euro(c.tax);
+    $('dv-total-ttc').textContent=euro(c.ttc);
+    let summary=$('dv-pro-totals');
+    if(!summary){
+      summary=document.createElement('div');summary.id='dv-pro-totals';summary.className='mt-3 text-sm space-y-1';
+      $('dv-total-ttc').parentElement.parentElement.appendChild(summary);
+    }
+    summary.innerHTML='<div class="flex justify-between"><span>Remise ('+c.discount.toLocaleString('fr-FR')+' %)</span><strong>− '+euro(c.ht-c.net)+'</strong></div><div class="flex justify-between"><span>Net HT après remise</span><strong>'+euro(c.net)+'</strong></div><div class="flex justify-between"><span>Acompte demandé ('+(Number($('dv-acompte').value)||0)+' %)</span><strong>'+euro(c.ttc*(Number($('dv-acompte').value)||0)/100)+'</strong></div><div class="flex justify-between border-t pt-1"><span>Solde TTC</span><strong>'+euro(c.ttc*(1-(Number($('dv-acompte').value)||0)/100))+'</strong></div>';
+  };
+  window.saveCurrentDevis = function(){
+    if(!state.currentLines.length){alert('Ajoutez au moins une prestation avant de sauvegarder.');return;}
+    const meta=readMeta();
+    const client=$('dv-client').value.trim()||'Client sans nom', objet=$('dv-objet').value.trim()||'Devis paysager', c=calc();
+    const id=Date.now(), numero=meta.numero||('DEV-'+new Date().getFullYear()+'-'+String(id).slice(-6));
+    $('dv-numero').value=numero;$('dv-numero-badge').textContent=numero;
+    const record={id,numero,date:meta.date||today(),client,objet,tva:c.rate,totalHT:c.ht,totalTTC:c.ttc,statut:meta.statut||'Brouillon',meta:{...meta,numero},lines:JSON.parse(JSON.stringify(state.currentLines))};
+    state.devisSaved.unshift(record);saveState();alert('Devis '+numero+' sauvegardé.');
+  };
+  window.loadDevis = function(id){
+    const d=state.devisSaved.find(x=>x.id===id);if(!d)return;
+    $('dv-client').value=d.client;$('dv-objet').value=d.objet;$('dv-tva').value=d.tva;
+    state.currentLines=JSON.parse(JSON.stringify(d.lines||[]));writeMeta(d.meta||{numero:d.numero,date:d.date,statut:d.statut});
+    $('dv-numero-badge').textContent=$('dv-numero').value||d.numero||'DEVIS —';renderDevisLines();
+  };
+  window.printDevisPDF = function(){
+    const c=calc(), m=readMeta(), client=$('dv-client').value||'Client', objet=$('dv-objet').value||'Travaux paysagers';
+    const rows=state.currentLines.map(l=>'<tr><td>'+esc(l.nom)+'</td><td>'+esc(l.unite)+'</td><td class="num">'+Number(l.qte||0).toLocaleString('fr-FR')+'</td><td class="num">'+euro(l.prix)+'</td><td class="num">'+euro((Number(l.qte)||0)*(Number(l.prix)||0))+'</td></tr>').join('');
+    const htmlDoc='<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+esc(m.numero||'Devis')+'</title><style>*{box-sizing:border-box}body{font:13px Arial,sans-serif;color:#243126;margin:34px}h1{color:#166534;font-size:25px;margin:0 0 5px}.muted{color:#647067;font-size:11px}.top{display:flex;justify-content:space-between;border-bottom:3px solid #166534;padding-bottom:18px}.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:24px 0}.panel{background:#f4f7f3;padding:13px;border-radius:7px}table{width:100%;border-collapse:collapse;margin-top:22px}th{background:#e8efe8;text-align:left}td,th{padding:9px;border-bottom:1px solid #dce3dc}.num{text-align:right;white-space:nowrap}.totals{margin:22px 0 0 auto;width:280px}.totals div{display:flex;justify-content:space-between;padding:5px}.grand{font-weight:bold;font-size:17px;color:#166534;border-top:2px solid #166534}.notes{white-space:pre-wrap;margin-top:24px;font-size:11px}.sign{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:50px}.sign div{border-top:1px solid #88938a;padding-top:8px;min-height:65px;font-size:11px}.foot{margin-top:35px;border-top:1px solid #ddd;padding-top:10px;font-size:10px;color:#68736a}@media print{body{margin:15mm}}</style></head><body><div class="top"><div><h1>DEVIS</h1><strong>'+esc(m.entreprise||'Entreprise paysagiste')+'</strong><p class="muted">'+esc(m.entreprise-coord||'')+'<br>'+esc(m.siret||'')+'</p></div><div style="text-align:right"><strong>'+esc(m.numero||'À numéroter')+'</strong><p>Émis le : '+esc(m.date||today())+'<br>Valable jusqu’au : '+esc(m.validite||'—')+'</p><strong>Statut : '+esc(m.statut||'Brouillon')+'</strong></div></div><div class="cols"><div class="panel"><strong>CLIENT</strong><p>'+esc(client)+'</p>'+esc(m.client-adresse||'')+'<br>'+esc(m.client-tel||'')+'<br>'+esc(m.client-email||'')+'</div><div class="panel"><strong>OBJET DES TRAVAUX</strong><p>'+esc(objet)+'</p><span class="muted">Adresse d’intervention : '+esc(m.client-adresse||'')+'</span></div></div><table><thead><tr><th>Désignation</th><th>Unité</th><th class="num">Qté</th><th class="num">PU HT</th><th class="num">Total HT</th></tr></thead><tbody>'+rows+'</tbody></table><div class="totals"><div><span>Total HT</span><strong>'+euro(c.ht)+'</strong></div><div><span>Remise ('+c.discount+' %)</span><strong>− '+euro(c.ht-c.net)+'</strong></div><div><span>Net HT</span><strong>'+euro(c.net)+'</strong></div><div><span>TVA ('+c.rate+' %)</span><strong>'+euro(c.tax)+'</strong></div><div class="grand"><span>Total TTC</span><strong>'+euro(c.ttc)+'</strong></div><div><span>Acompte ('+(Number(m.acompte)||0)+' %)</span><strong>'+euro(c.ttc*(Number(m.acompte)||0)/100)+'</strong></div></div><div class="notes"><strong>Conditions de paiement :</strong> '+esc(m.paiement||'À convenir')+'<br><br><strong>Notes et conditions particulières :</strong><br>'+esc(m.notes||'Aucune condition particulière renseignée.')+'</div><div class="sign"><div>Bon pour accord — date et signature du client</div><div>Signature de l’entreprise</div></div><div class="foot">Devis établi sous réserve de visite technique et de validation des quantités. Les taux de TVA doivent être vérifiés selon la nature des travaux et la situation du client.</div><script>window.onload=()=>window.print()<\/script></body></html>';
+    const w=window.open('','_blank');if(!w){alert('Autorisez les fenêtres pop-up pour générer le PDF.');return;}w.document.open();w.document.write(htmlDoc);w.document.close();
+  };
+  // Générer un numéro et les dates initiales à l'ouverture.
+  if(!$('dv-date').value)$('dv-date').value=today();
+  if(!$('dv-validite').value)$('dv-validite').value=addDays(today(),30);
+  if(!$('dv-numero').value){const n='DEV-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);$('dv-numero').value=n;$('dv-numero-badge').textContent=n;}
+  // Recalcul lors des changements d'acompte et actualisation du badge.
+  $('dv-acompte').addEventListener('input',renderDevisLines);
+  $('dv-numero').addEventListener('input',()=> $('dv-numero-badge').textContent=$('dv-numero').value||'DEVIS —');
+  $('dv-statut').addEventListener('change',()=>{});
+  // Bouton PDF dédié à la place de l'impression brute de toute la page.
+  const printBtn=[...document.querySelectorAll('#tab-devis button')].find(b=>b.textContent.includes('Imprimer / PDF'));
+  if(printBtn){printBtn.textContent='Télécharger le PDF';printBtn.onclick=printDevisPDF;}
+  const totalLabel=$('dv-total-ttc').parentElement.parentElement;
+  if(totalLabel)totalLabel.classList.add('print-total');
+  renderDevisLines();
+})();
+</script>
+
 </body>
 </html>
